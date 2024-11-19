@@ -21,6 +21,8 @@ const Backdrop = styled.div`
 const Wrapper = styled.div`
   width: 100%;
   height: 100%;
+  max-width: 600px;
+
   background: #222639;
   border-radius: 16px;
   padding: 16px;
@@ -29,7 +31,6 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   box-shadow: 0px 0px 5px #0000006f;
-
   .close {
     position: absolute;
     top: 0px;

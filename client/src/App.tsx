@@ -7,7 +7,7 @@ import RoomSelectionDialog from './components/RoomSelectionDialog'
 import LoginDialog from './components/LoginDialog'
 import ComputerDialog from './components/ComputerDialog'
 import WhiteboardDialog from './components/WhiteboardDialog'
-import VideoConnectionDialog from './components/VideoConnectionDialog'
+// import VideoConnectionDialog from './components/VideoConnectionDialog'
 import Chat from './components/Chat'
 import HelperButtonGroup from './components/HelperButtonGroup'
 import MobileVirtualJoystick from './components/MobileVirtualJoystick'
@@ -49,6 +49,7 @@ function App() {
     ui = <LoginDialog />
   } else {
     /* Render RoomSelectionDialog if yet selected a room. */
+    //UI 편집
     ui = <RoomSelectionDialog />
   }
 

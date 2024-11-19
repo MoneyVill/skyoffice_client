@@ -3,8 +3,8 @@ import styled from 'styled-components'
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
 import Avatar from '@mui/material/Avatar'
-import Alert from '@mui/material/Alert'
-import AlertTitle from '@mui/material/AlertTitle'
+// import Alert from '@mui/material/Alert'
+// import AlertTitle from '@mui/material/AlertTitle'
 import ArrowRightIcon from '@mui/icons-material/ArrowRight'
 
 import { Swiper, SwiperSlide } from 'swiper/react'
@@ -34,12 +34,12 @@ const Wrapper = styled.form`
   box-shadow: 0px 0px 5px #0000006f;
 `
 
-const Title = styled.p`
-  margin: 5px;
-  font-size: 20px;
-  color: #c2c2c2;
-  text-align: center;
-`
+// const Title = styled.p`
+//   margin: 5px;
+//   font-size: 20px;
+//   color: #c2c2c2;
+//   text-align: center;
+// `
 
 const RoomName = styled.div`
   max-width: 500px;
@@ -77,17 +77,20 @@ const SubTitle = styled.h3`
 
 const Content = styled.div`
   display: flex;
+  flex-direction: column; /* Change to column layout */
+  align-items: center; /* Center align horizontally */
+  gap: 0px; /* Add space between Right and Left sections */
   margin: 36px 0;
 `
 
 const Left = styled.div`
-  margin-right: 48px;
+  margin-right: 0px;
 
   --swiper-navigation-size: 24px;
 
   .swiper {
     width: 160px;
-    height: 220px;
+    height: 200px;
     border-radius: 8px;
     overflow: hidden;
   }
@@ -119,13 +122,13 @@ const Bottom = styled.div`
   justify-content: center;
 `
 
-const Warning = styled.div`
-  margin-top: 30px;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-`
+// const Warning = styled.div`
+//   margin-top: 30px;
+//   position: relative;
+//   display: flex;
+//   flex-direction: column;
+//   gap: 3px;
+// `
 
 const avatars = [
   { name: 'adam', img: Adam },
@@ -146,9 +149,14 @@ export default function LoginDialog() {
   const [nameFieldEmpty, setNameFieldEmpty] = useState<boolean>(false)
   const dispatch = useAppDispatch()
   // const videoConnected = useAppSelector((state) => state.user.videoConnected)
-  const roomJoined = useAppSelector((state) => state.room.roomJoined)
-  const roomName = useAppSelector((state) => state.room.roomName)
-  const roomDescription = useAppSelector((state) => state.room.roomDescription)
+  // const roomJoined = useAppSelector((state) => state.room.roomJoined)
+  // const roomName = useAppSelector((state) => state.room.roomName)
+  // const roomDescription = useAppSelector((state) => state.room.roomDescription)
+
+  const roomJoined = true // Set to true for default joining capability
+  const roomName = 'Jungle MoneyVille' // Set a default room name
+  const roomDescription = 'MoneyVille에 오신걸 환영합니다' // Set a default room description
+
   const game = phaserGame.scene.keys.game as Game
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -167,7 +175,6 @@ export default function LoginDialog() {
 
   return (
     <Wrapper onSubmit={handleSubmit}>
-      <Title>Joining</Title>
       <RoomName>
         <Avatar style={{ background: getColorByString(roomName) }}>
           {getAvatarString(roomName)}
@@ -178,8 +185,22 @@ export default function LoginDialog() {
         <ArrowRightIcon /> {roomDescription}
       </RoomDescription>
       <Content>
+        <Right>
+          <TextField
+            autoFocus
+            fullWidth
+            label="이름"
+            variant="outlined"
+            color="secondary"
+            error={nameFieldEmpty}
+            helperText={nameFieldEmpty && 'Name is required'}
+            onInput={(e) => {
+              setName((e.target as HTMLInputElement).value)
+            }}
+          />
+        </Right>
         <Left>
-          <SubTitle>Select an avatar</SubTitle>
+          <SubTitle>캐릭터 선택</SubTitle>
           <Swiper
             modules={[Navigation]}
             navigation
@@ -196,47 +217,10 @@ export default function LoginDialog() {
             ))}
           </Swiper>
         </Left>
-        <Right>
-          <TextField
-            autoFocus
-            fullWidth
-            label="Name"
-            variant="outlined"
-            color="secondary"
-            error={nameFieldEmpty}
-            helperText={nameFieldEmpty && 'Name is required'}
-            onInput={(e) => {
-              setName((e.target as HTMLInputElement).value)
-            }}
-          />
-          {/* {!videoConnected && (
-            <Warning>
-              <Alert variant="outlined" severity="warning">
-                <AlertTitle>Warning</AlertTitle>
-                No webcam/mic connected - <strong>connect one for best experience!</strong>
-              </Alert>
-              <Button
-                variant="outlined"
-                color="secondary"
-                onClick={() => {
-                  game.network.webRTC?.getUserMedia()
-                }}
-              >
-                Connect Webcam
-              </Button>
-            </Warning>
-          )} */}
-
-          {/* {videoConnected && */(
-            <Warning>
-              <Alert variant="outlined">Webcam connected!</Alert>
-            </Warning>
-          )}
-        </Right>
       </Content>
       <Bottom>
         <Button variant="contained" color="secondary" size="large" type="submit">
-          Join
+          교실 입장
         </Button>
       </Bottom>
     </Wrapper>

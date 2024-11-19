@@ -11,7 +11,7 @@ import WhiteboardDialog from './components/WhiteboardDialog'
 import Chat from './components/Chat'
 import HelperButtonGroup from './components/HelperButtonGroup'
 import MobileVirtualJoystick from './components/MobileVirtualJoystick'
-
+import {BrowserRouter} from 'react-router-dom'
 const Backdrop = styled.div`
   position: absolute;
   height: 100%;
@@ -54,11 +54,20 @@ function App() {
   }
 
   return (
-    <Backdrop>
-      {ui}
-      {/* Render HelperButtonGroup if no dialogs are opened. */}
-      {!computerDialogOpen && !whiteboardDialogOpen && <HelperButtonGroup />}
-    </Backdrop>
+    //배포용
+    <BrowserRouter basename='/client'>
+      <Backdrop>
+        {ui}
+        {/* Render HelperButtonGroup if no dialogs are opened. */}
+        {!computerDialogOpen && !whiteboardDialogOpen && <HelperButtonGroup />}
+      </Backdrop>
+    </BrowserRouter>
+    //로컬용
+    // <Backdrop>
+    //   {ui}
+    //   {/* Render HelperButtonGroup if no dialogs are opened. */}
+    //   {!computerDialogOpen && !whiteboardDialogOpen && <HelperButtonGroup />}
+    // </Backdrop>
   )
 }
 

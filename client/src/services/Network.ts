@@ -44,7 +44,10 @@ export default class Network {
     const endpoint =
       process.env.NODE_ENV === 'production'
         ? 'wss://gatherjungle.store:8080' // 배포 환경의 서버 URL
-        : `${protocol}//${window.location.hostname}:1234`; // 로컬 개발 환경의 URL
+        //배포용
+        : `ws://localhost:1234/server`; // 로컬 개발 환경의 URL
+        //로컬용
+        // : `${protocol}//${window.location.hostname}:1234`; // 로컬 개발 환경의 URL
     //배포용 코드
 
     this.client = new Client(endpoint)
@@ -58,18 +61,31 @@ export default class Network {
   }
   //화이트보드 코드 추가
   private predefinedUrls = new Map<string, string>([
-    ['0', 'https://www.youtube.com/embed/ZN4BgFRCr6I/'],
-    ['1', 'https://www.naver.com/'],
-    ['2', 'https://www.google.com/'],
-    ['3', 'https://www.youtube.com/embed/r5gRTDIECEQ'],
+    //로컬용
+    // ['0', 'https://www.youtube.com/embed/ZN4BgFRCr6I/'],
+    // ['1', 'https://www.naver.com/'],
+    // ['2', 'https://www.google.com/'],
+    // ['3', 'https://www.youtube.com/embed/r5gRTDIECEQ'],
+    //배포용
+    ['0', 'https://jungle-school.xyz/student/home/exchequer'], // 남동방
+    ['1', 'https://jungle-school.xyz/student/finance/invest'], //북동방 오른쪽
+    ['2', 'https://jungle-school.xyz/student/home/asset'], // 남서방
+    ['3', 'https://jungle-school.xyz/student/finance/deposit'], //북동방 왼쪽
   ]);
   //화이트보드 코드 추가
   //컴퓨터 코드 추가
   private predefinedComputerUrls = new Map<string, string>([
-    ['0', 'https://www.youtube.com/embed/ZN4BgFRCr6I/'],
-    ['1', 'https://www.naver.com/'],
-    ['2', 'https://www.google.com/'],
-    ['3', 'https://www.youtube.com/embed/r5gRTDIECEQ'],
+    //로컬용
+    // ['0', 'https://www.youtube.com/embed/ZN4BgFRCr6I/'],
+    // ['1', 'https://www.naver.com/'],
+    // ['2', 'https://www.google.com/'],
+    // ['3', 'https://www.youtube.com/embed/r5gRTDIECEQ'],
+    //배포용
+    ['0', 'https://jungle-school.xyz/student/gov/job'], //남서 왼쪽
+    ['1', 'https://jungle-school.xyz/student/class/jobsearch'],//남서 오른쪽
+    ['2', 'https://jungle-school.xyz/student/gov/exchequer'],//북서방
+    ['3', 'https://jungle-school.xyz/student/class/students'], //남동방 왼쪽
+    ['4', 'https://jungle-school.xyz/student/gov/rule'], //남동방 오른쪽
   ]);
   //컴퓨터 코드 추가
   /**

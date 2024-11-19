@@ -21,7 +21,7 @@ const Backdrop = styled.div`
 const Wrapper = styled.div`
   width: 100%;
   height: 100%;
-  max-width: 600px;
+  max-width: 500px;
 
   background: #222639;
   border-radius: 16px;

@@ -12,6 +12,4 @@ export default defineConfig({
   base: '/client/',
   //
   plugins: [react()],
-  build: {
-    outDir: 'public'}
 })

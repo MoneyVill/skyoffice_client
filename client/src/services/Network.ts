@@ -20,7 +20,7 @@ import {
   pushPlayerLeftMessage,
 } from '../stores/ChatStore'
 import { setWhiteboardUrls } from '../stores/WhiteboardStore'
-import { setComputerUrls } from '../stores/ComputerStore';
+import { setComputerUrls } from '../stores/ComputerStore'
 
 export default class Network {
   private client: Client
@@ -31,24 +31,8 @@ export default class Network {
   mySessionId!: string
 
   constructor() {
-    //오리지널 코드
-    // const protocol = window.location.protocol.replace('http', 'ws')
-    // const endpoint =
-    //   process.env.NODE_ENV === 'production'
-    //     ? import.meta.env.VITE_SERVER_URL
-    //     : `${protocol}//${window.location.hostname}:1234`
-    //오리지널 코드
-
-    //배포용 코드
     const protocol = window.location.protocol.replace('http', 'ws');
-    const endpoint =
-      process.env.NODE_ENV === 'production'
-        ? 'wss://gatherjungle.store:8080' // 배포 환경의 서버 URL
-        //배포용
-        : `ws://localhost:1234/server`; // 로컬 개발 환경의 URL
-        //로컬용
-        // : `${protocol}//${window.location.hostname}:1234`; // 로컬 개발 환경의 URL
-    //배포용 코드
+    const endpoint = import.meta.env.VITE_SERVER_URL
 
     this.client = new Client(endpoint)
     this.joinLobbyRoom().then(() => {

@@ -15,6 +15,7 @@ import { ItemType } from '../../../types/Items'
 import { NavKeys } from '../../../types/KeyboardState'
 import { JoystickMovement } from '../components/Joystick'
 import { openURL } from '../utils/helpers'
+import VendingMachine from '../items/VendingMachine'
 
 export default class MyPlayer extends Player {
   private playContainerBody: Phaser.Physics.Arcade.Body
@@ -53,6 +54,7 @@ export default class MyPlayer extends Player {
     cursors: NavKeys,
     keyE: Phaser.Input.Keyboard.Key,
     keyR: Phaser.Input.Keyboard.Key,
+    keyX: Phaser.Input.Keyboard.Key,
     network: Network
   ) {
     if (!cursors) return
@@ -71,8 +73,8 @@ export default class MyPlayer extends Player {
           break
         case ItemType.VENDINGMACHINE:
           // hacky and hard-coded, but leaving it as is for now
-          const url = 'vendingmachine url'
-          openURL(url)
+          const vendingmachine = item as VendingMachine
+
           break
       }
     }
@@ -123,6 +125,52 @@ export default class MyPlayer extends Player {
           chairItem.setDialogBox('Press E to leave')
           this.chairOnSit = chairItem
           this.playerBehavior = PlayerBehavior.SITTING
+          return
+        }
+
+        if (Phaser.Input.Keyboard.JustDown(keyX) && item?.itemType === ItemType.VENDINGMACHINE) {
+          const vendingmachineItem = item as VendingMachine
+          /**
+           * move player to the chair and play sit animation
+           * a delay is called to wait for player movement (from previous velocity) to end
+           * as the player tends to move one more frame before sitting down causing player
+           * not sitting at the center of the chair
+           */
+          this.scene.time.addEvent({
+            delay: 10,
+            callback: () => {
+              // update character velocity and position
+              this.setVelocity(0, 0)
+              if (vendingmachineItem.itemDirection) {
+                this.setPosition(
+                  vendingmachineItem.x + sittingShiftData[vendingmachineItem.itemDirection][0],
+                  vendingmachineItem.y + sittingShiftData[vendingmachineItem.itemDirection][1]
+                ).setDepth(vendingmachineItem.depth + sittingShiftData[vendingmachineItem.itemDirection][2])
+                // also update playerNameContainer velocity and position
+                this.playContainerBody.setVelocity(0, 0)
+                this.playerContainer.setPosition(
+                  vendingmachineItem.x + sittingShiftData[vendingmachineItem.itemDirection][0],
+                  vendingmachineItem.y + sittingShiftData[vendingmachineItem.itemDirection][1] - 30
+                )
+              }
+              vendingmachineItem.itemDirection = 'down'  // down 추가
+              this.play(`${this.playerTexture}_work_${vendingmachineItem.itemDirection}`, true)
+              playerSelector.selectedItem = undefined
+              if (vendingmachineItem.itemDirection === 'up') {
+                playerSelector.setPosition(this.x, this.y - this.height)
+              } else {
+                playerSelector.setPosition(0, 0)
+              }
+              // send new location and anim to server
+              network.updatePlayer(this.x, this.y, this.anims.currentAnim.key)
+            },
+            loop: false,
+          })
+          // set up new dialog as player sits down
+          vendingmachineItem.clearDialogBox()
+          vendingmachineItem.setDialogBox('Press X to leave')
+          this.chairOnSit = vendingmachineItem
+          this.playerBehavior = PlayerBehavior.WORKING
           return
         }
 
@@ -185,6 +233,20 @@ export default class MyPlayer extends Player {
       case PlayerBehavior.SITTING:
         // back to idle if player press E while sitting
         if (Phaser.Input.Keyboard.JustDown(keyE)) {
+          const parts = this.anims.currentAnim.key.split('_')
+          parts[1] = 'idle'
+          this.play(parts.join('_'), true)
+          this.playerBehavior = PlayerBehavior.IDLE
+          this.chairOnSit?.clearDialogBox()
+          playerSelector.setPosition(this.x, this.y)
+          playerSelector.update(this, cursors)
+          network.updatePlayer(this.x, this.y, this.anims.currentAnim.key)
+        }
+        break
+
+      case PlayerBehavior.WORKING:
+        // back to idle if player press E while sitting
+        if (Phaser.Input.Keyboard.JustDown(keyX)) {
           const parts = this.anims.currentAnim.key.split('_')
           parts[1] = 'idle'
           this.play(parts.join('_'), true)

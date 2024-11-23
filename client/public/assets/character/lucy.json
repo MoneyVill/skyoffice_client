@@ -415,14 +415,62 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":32,"h":48},
 	"sourceSize": {"w":32,"h":48}
+},
+{
+	"filename": "Lucy_work_1.png",
+	"frame": {"x":1664,"y":0,"w":32,"h":48},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":32,"h":48},
+	"sourceSize": {"w":32,"h":48}
+},
+{
+	"filename": "Lucy_work_2.png",
+	"frame": {"x":1696,"y":0,"w":32,"h":48},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":32,"h":48},
+	"sourceSize": {"w":32,"h":48}
+},
+{
+	"filename": "Lucy_work_3.png",
+	"frame": {"x":1728,"y":0,"w":32,"h":48},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":32,"h":48},
+	"sourceSize": {"w":32,"h":48}
+},
+{
+	"filename": "Lucy_work_4.png",
+	"frame": {"x":1760,"y":0,"w":32,"h":48},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":32,"h":48},
+	"sourceSize": {"w":32,"h":48}
+},
+{
+	"filename": "Lucy_work_5.png",
+	"frame": {"x":1792,"y":0,"w":32,"h":48},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":32,"h":48},
+	"sourceSize": {"w":32,"h":48}
+},
+{
+	"filename": "Lucy_work_6.png",
+	"frame": {"x":1824,"y":0,"w":32,"h":48},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":32,"h":48},
+	"sourceSize": {"w":32,"h":48}
 }],
 "meta": {
 	"app": "https://www.codeandweb.com/texturepacker",
 	"version": "1.0",
-	"image": "lucy.png",
+	"image": "Lucy.png",
 	"format": "RGBA8888",
-	"size": {"w":1664,"h":48},
+	"size": {"w":1856,"h":48},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:cf62eed88d2d2837781480b49ea6e0b2:8fbd46702d57d85c57464dc71af1ffa8:07659fb7730975ef507690de25a5c8ed$"
+	"smartupdate": "$TexturePacker:SmartUpdate:96434cff96bbc22ffad3d1de1104af6c:2ad14aa2b05f668b3867470fe8db6b2f:b1153833585d4fd88838f70510182386$"
 }
 }

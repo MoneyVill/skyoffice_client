@@ -1,5 +1,3 @@
-import Phaser from 'phaser'
-
 export const createCharacterAnims = (anims: Phaser.Animations.AnimationManager) => {
   const animsFrameRate = 15
 
@@ -124,6 +122,16 @@ export const createCharacterAnims = (anims: Phaser.Animations.AnimationManager) 
   })
 
   anims.create({
+    key: 'nancy_work_down',
+    frames: anims.generateFrameNames('nancy', {
+      start: 52,
+      end: 57,
+    }),
+    repeat: -1,
+    frameRate: animsFrameRate,
+  })
+
+  anims.create({
     key: 'lucy_idle_right',
     frames: anims.generateFrameNames('lucy', {
       start: 0,
@@ -240,6 +248,16 @@ export const createCharacterAnims = (anims: Phaser.Animations.AnimationManager) 
       end: 51,
     }),
     repeat: 0,
+    frameRate: animsFrameRate,
+  })
+
+  anims.create({
+    key: 'lucy_work_down',
+    frames: anims.generateFrameNames('lucy', {
+      start: 52,
+      end: 57,
+    }),
+    repeat: -1,
     frameRate: animsFrameRate,
   })
 
@@ -364,6 +382,16 @@ export const createCharacterAnims = (anims: Phaser.Animations.AnimationManager) 
   })
 
   anims.create({
+    key: 'ash_work_down',
+    frames: anims.generateFrameNames('ash', {
+      start: 52,
+      end: 57,
+    }),
+    repeat: -1,
+    frameRate: animsFrameRate,
+  })
+
+  anims.create({
     key: 'adam_idle_right',
     frames: anims.generateFrameNames('adam', {
       start: 0,
@@ -480,6 +508,16 @@ export const createCharacterAnims = (anims: Phaser.Animations.AnimationManager) 
       end: 51,
     }),
     repeat: 0,
+    frameRate: animsFrameRate,
+  })
+
+  anims.create({
+    key: 'adam_work_down',
+    frames: anims.generateFrameNames('adam', {
+      start: 52,
+      end: 57,
+    }),
+    repeat: -1,
     frameRate: animsFrameRate,
   })
 }

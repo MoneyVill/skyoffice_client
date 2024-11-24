@@ -467,10 +467,10 @@
 "meta": {
 	"app": "https://www.codeandweb.com/texturepacker",
 	"version": "1.0",
-	"image": "Nancy.png",
+	"image": "nancy.png",
 	"format": "RGBA8888",
 	"size": {"w":1856,"h":48},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:a766309410d7c20e3c9421072610e2bf:f7508f89b622e9dc720cb641e45bdabd:44cf438b7ef9dd14d26f44a164237ea3$"
+	"smartupdate": "$TexturePacker:SmartUpdate:d00e27a4004df41f0a2affec1f4cfb0f:4dedb1b5d2e80a5db67c27d199cf2c40:9c17caf0cdea1ae8b03c160a26567854$"
 }
 }

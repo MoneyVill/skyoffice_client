@@ -467,10 +467,10 @@
 "meta": {
 	"app": "https://www.codeandweb.com/texturepacker",
 	"version": "1.0",
-	"image": "Ash.png",
+	"image": "ash.png",
 	"format": "RGBA8888",
 	"size": {"w":1856,"h":48},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:459749ca212a9e7e0b7bd9064df29c5a:c9f626db36efc9698e0f7a65450920a4:a78ff7f0b8843bbc2a49784a7425c3b2$"
+	"smartupdate": "$TexturePacker:SmartUpdate:b47fa817545a92396b39f86c74f84424:ecd6fe1866b0233d4d68930d13737f43:01083ca1b4f2f4ff6a03e28d7f2cce8d$"
 }
 }

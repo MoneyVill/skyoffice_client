@@ -467,10 +467,10 @@
 "meta": {
 	"app": "https://www.codeandweb.com/texturepacker",
 	"version": "1.0",
-	"image": "Lucy.png",
+	"image": "lucy.png",
 	"format": "RGBA8888",
 	"size": {"w":1856,"h":48},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:96434cff96bbc22ffad3d1de1104af6c:2ad14aa2b05f668b3867470fe8db6b2f:b1153833585d4fd88838f70510182386$"
+	"smartupdate": "$TexturePacker:SmartUpdate:5b224c5a52d2e90c45e019301a794794:7242edb4f5e3b4697e93c3b5ab9d6e83:07659fb7730975ef507690de25a5c8ed$"
 }
 }

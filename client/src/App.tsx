@@ -32,10 +32,12 @@ function App() {
   if (loggedIn) {
     if (computerDialogOpen) {
       /* Render ComputerDialog if user is using a computer. */
-      ui = <ComputerDialog />
+      ui = (<><ComputerDialog />
+            <Scoreboard/></>)
     } else if (whiteboardDialogOpen) {
       /* Render WhiteboardDialog if user is using a whiteboard. */
-      ui = <WhiteboardDialog />
+      ui = (<><WhiteboardDialog />
+            <Scoreboard/></>)
     } else {
       ui = (
         /* Render Chat or VideoConnectionDialog if no dialogs are opened. */

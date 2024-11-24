@@ -13,6 +13,7 @@ import Scoreboard from './components/Scoreboard'
 import HelperButtonGroup from './components/HelperButtonGroup'
 import MobileVirtualJoystick from './components/MobileVirtualJoystick'
 import {BrowserRouter} from 'react-router-dom'
+
 const Backdrop = styled.div`
   position: absolute;
   height: 100%;
@@ -25,11 +26,7 @@ function App() {
   const whiteboardDialogOpen = useAppSelector((state) => state.whiteboard.whiteboardDialogOpen)
   // const videoConnected = useAppSelector((state) => state.user.videoConnected)
   const roomJoined = useAppSelector((state) => state.room.roomJoined)
-  const players = [
-    { name: 'Player1', score: 1500, gold: 400 },
-    { name: 'Player2', score: 1200, gold: 300 },
-    { name: 'Player3', score: 1800, gold: 500 },
-  ];
+
 
   let ui: JSX.Element
   if (loggedIn) {
@@ -44,7 +41,7 @@ function App() {
         /* Render Chat or VideoConnectionDialog if no dialogs are opened. */
         <>
           <Chat />
-          <Scoreboard players={players} />
+          <Scoreboard/>
           {/* Render VideoConnectionDialog if user is not connected to a webcam. */}
           {/* {!videoConnected && <VideoConnectionDialog />} */}
           <MobileVirtualJoystick />
@@ -61,7 +58,6 @@ function App() {
   }
 
   return (
-    //배포용
     <BrowserRouter basename='/client'>
       <Backdrop>
         {ui}
@@ -69,12 +65,6 @@ function App() {
         {!computerDialogOpen && !whiteboardDialogOpen && <HelperButtonGroup />}
       </Backdrop>
     </BrowserRouter>
-    //로컬용
-    // <Backdrop>
-    //   {ui}
-    //   {/* Render HelperButtonGroup if no dialogs are opened. */}
-    //   {!computerDialogOpen && !whiteboardDialogOpen && <HelperButtonGroup />}
-    // </Backdrop>
   )
 }
 

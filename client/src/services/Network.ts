@@ -27,12 +27,29 @@ export default class Network {
   private room?: Room<IOfficeState>
   private lobby!: Room
   // webRTC?: WebRTC
-
+  private predefinedUrls: Map<string, string>; // 맵 선언
+  private predefinedComputerUrls: Map<string, string>;
   mySessionId!: string
 
   constructor() {
     const protocol = window.location.protocol.replace('http', 'ws');
     const endpoint = import.meta.env.VITE_SERVER_URL
+
+    this.predefinedUrls = new Map<string, string>([
+      ['0', import.meta.env.VITE_WHITE_URL_0 || ''],
+      ['1', import.meta.env.VITE_WHITE_URL_1 || ''],
+      ['2', import.meta.env.VITE_WHITE_URL_2 || ''],
+      ['3', import.meta.env.VITE_WHITE_URL_3 || ''],
+    ]);
+
+    // Computer URLs 초기화
+    this.predefinedComputerUrls = new Map<string, string>([
+      ['0', import.meta.env.VITE_COMPUTER_URL_0 || ''],
+      ['1', import.meta.env.VITE_COMPUTER_URL_1 || ''],
+      ['2', import.meta.env.VITE_COMPUTER_URL_2 || ''],
+      ['3', import.meta.env.VITE_COMPUTER_URL_3 || ''],
+      ['4', import.meta.env.VITE_COMPUTER_URL_4 || ''],
+    ]);
 
     this.client = new Client(endpoint)
     this.joinLobbyRoom().then(() => {
@@ -43,35 +60,7 @@ export default class Network {
     phaserEvents.on(Event.MY_PLAYER_TEXTURE_CHANGE, this.updatePlayer, this)
     // phaserEvents.on(Event.PLAYER_DISCONNECTED, this.playerStreamDisconnect, this)
   }
-  //화이트보드 코드 추가
-  private predefinedUrls = new Map<string, string>([
-    //로컬용
-    // ['0', 'https://www.youtube.com/embed/ZN4BgFRCr6I/'],
-    // ['1', 'https://www.naver.com/'],
-    // ['2', 'https://www.google.com/'],
-    // ['3', 'https://www.youtube.com/embed/r5gRTDIECEQ'],
-    //배포용
-    ['0', 'https://jungle-school.xyz/student/home/exchequer'], // 남동방
-    ['1', 'https://jungle-school.xyz/student/finance/invest'], //북동방 오른쪽
-    ['2', 'https://jungle-school.xyz/student/home/asset'], // 남서방
-    ['3', 'https://jungle-school.xyz/student/finance/deposit'], //북동방 왼쪽
-  ]);
-  //화이트보드 코드 추가
-  //컴퓨터 코드 추가
-  private predefinedComputerUrls = new Map<string, string>([
-    //로컬용
-    // ['0', 'https://www.youtube.com/embed/ZN4BgFRCr6I/'],
-    // ['1', 'https://www.naver.com/'],
-    // ['2', 'https://www.google.com/'],
-    // ['3', 'https://www.youtube.com/embed/r5gRTDIECEQ'],
-    //배포용
-    ['0', 'https://jungle-school.xyz/student/gov/job'], //남서 왼쪽
-    ['1', 'https://jungle-school.xyz/student/class/jobsearch'],//남서 오른쪽
-    ['2', 'https://jungle-school.xyz/student/gov/exchequer'],//북서방
-    ['3', 'https://jungle-school.xyz/student/class/students'], //남동방 왼쪽
-    ['4', 'https://jungle-school.xyz/student/gov/rule'], //남동방 오른쪽
-  ]);
-  //컴퓨터 코드 추가
+
   /**
    * method to join Colyseus' built-in LobbyRoom, which automatically notifies
    * connected clients whenever rooms with "realtime listing" have updates

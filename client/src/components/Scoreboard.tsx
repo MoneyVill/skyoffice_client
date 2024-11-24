@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
 const ScoreboardWrapper = styled.div`
@@ -32,7 +32,56 @@ const PlayerStats = styled.span`
   color: lightgreen;
 `;
 
-const Scoreboard = ({ players }: { players: Array<{ name: string; score: number; gold: number }> }) => {
+const Scoreboard = () => {
+  const [players, setPlayers] = useState<Array<{ name: string; creditRating: number; amount: number }>>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true); // 로딩 상태
+  const [error, setError] = useState<string | null>(null); // 오류 상태
+
+  useEffect(() => {
+    const nationId = 1; // 전달할 nationId
+    const socket = new WebSocket(`ws://localhost:8081/ws/db-data?nationId=${nationId}`);
+
+    socket.onopen = () => {
+      console.log('WebSocket 연결 성공');
+    };
+
+    socket.onmessage = (event) => {
+      console.log('받은 데이터:', event.data);
+      try {
+        const parsedData = JSON.parse(event.data);
+        setPlayers(parsedData); // 플레이어 데이터 업데이트
+        setIsLoading(false); // 로딩 완료
+      } catch (error) {
+        console.error('JSON 파싱 오류:', error);
+        setError('데이터를 처리하는 중 오류가 발생했습니다.');
+      }
+    };
+
+    socket.onerror = (error) => {
+      console.error('WebSocket 오류:', error);
+      setError('WebSocket 연결 중 오류가 발생했습니다.');
+    };
+
+    socket.onclose = (event) => {
+      console.log('WebSocket 닫힘:', event.code, event.reason);
+      if (!error) {
+        setError('WebSocket 연결이 닫혔습니다.');
+      }
+    };
+
+    // return () => {
+    //   socket.close(); // 컴포넌트 언마운트 시 WebSocket 연결 해제
+    // };
+  }, []);
+
+  if (isLoading) {
+    return <ScoreboardWrapper>Loading...</ScoreboardWrapper>; // 로딩 상태 표시
+  }
+
+  if (error) {
+    return <ScoreboardWrapper>{error}</ScoreboardWrapper>; // 오류 메시지 표시
+  }
+
   return (
     <ScoreboardWrapper>
       <h3>Scoreboard</h3>
@@ -40,7 +89,7 @@ const Scoreboard = ({ players }: { players: Array<{ name: string; score: number;
         <PlayerRow key={index}>
           <PlayerName>{player.name}</PlayerName>
           <PlayerStats>
-            {player.score} pts | {player.gold} gold
+            {player.creditRating} pts | {player.amount} gold
           </PlayerStats>
         </PlayerRow>
       ))}
@@ -49,7 +98,3 @@ const Scoreboard = ({ players }: { players: Array<{ name: string; score: number;
 };
 
 export default Scoreboard;
-
-// export default function Scoreboard() {
-
-// }

@@ -9,6 +9,7 @@ import ComputerDialog from './components/ComputerDialog'
 import WhiteboardDialog from './components/WhiteboardDialog'
 // import VideoConnectionDialog from './components/VideoConnectionDialog'
 import Chat from './components/Chat'
+import Scoreboard from './components/Scoreboard'
 import HelperButtonGroup from './components/HelperButtonGroup'
 import MobileVirtualJoystick from './components/MobileVirtualJoystick'
 import {BrowserRouter} from 'react-router-dom'
@@ -24,6 +25,11 @@ function App() {
   const whiteboardDialogOpen = useAppSelector((state) => state.whiteboard.whiteboardDialogOpen)
   // const videoConnected = useAppSelector((state) => state.user.videoConnected)
   const roomJoined = useAppSelector((state) => state.room.roomJoined)
+  const players = [
+    { name: 'Player1', score: 1500, gold: 400 },
+    { name: 'Player2', score: 1200, gold: 300 },
+    { name: 'Player3', score: 1800, gold: 500 },
+  ];
 
   let ui: JSX.Element
   if (loggedIn) {
@@ -38,6 +44,7 @@ function App() {
         /* Render Chat or VideoConnectionDialog if no dialogs are opened. */
         <>
           <Chat />
+          <Scoreboard players={players} />
           {/* Render VideoConnectionDialog if user is not connected to a webcam. */}
           {/* {!videoConnected && <VideoConnectionDialog />} */}
           <MobileVirtualJoystick />

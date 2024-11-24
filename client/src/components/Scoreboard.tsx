@@ -36,10 +36,11 @@ const Scoreboard = () => {
   const [players, setPlayers] = useState<Array<{ name: string; creditRating: number; amount: number }>>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true); // 로딩 상태
   const [error, setError] = useState<string | null>(null); // 오류 상태
-
+  const moneyvill_url = import.meta.env.VITE_MONEYVILL_URL
+  console.log(moneyvill_url)
   useEffect(() => {
     const nationId = 1; // 전달할 nationId
-    const socket = new WebSocket(`ws://localhost:8081/ws/db-data?nationId=${nationId}`);
+    const socket = new WebSocket(moneyvill_url + `/ws/db-data?nationId=${nationId}`);
 
     socket.onopen = () => {
       console.log('WebSocket 연결 성공');

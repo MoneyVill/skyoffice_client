@@ -32,18 +32,16 @@ function App() {
   if (loggedIn) {
     if (computerDialogOpen) {
       /* Render ComputerDialog if user is using a computer. */
-      ui = (<><ComputerDialog />
-            <Scoreboard/></>)
+      ui = <ComputerDialog />
     } else if (whiteboardDialogOpen) {
       /* Render WhiteboardDialog if user is using a whiteboard. */
-      ui = (<><WhiteboardDialog />
-            <Scoreboard/></>)
+      ui = <WhiteboardDialog />
     } else {
       ui = (
         /* Render Chat or VideoConnectionDialog if no dialogs are opened. */
         <>
           <Chat />
-          <Scoreboard/>
+          {/* <Scoreboard/> */}
           {/* Render VideoConnectionDialog if user is not connected to a webcam. */}
           {/* {!videoConnected && <VideoConnectionDialog />} */}
           <MobileVirtualJoystick />

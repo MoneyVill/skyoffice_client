@@ -37,7 +37,7 @@ const Scoreboard = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true); // 로딩 상태
   const [error, setError] = useState<string | null>(null); // 오류 상태
   const moneyvill_url = import.meta.env.VITE_MONEYVILL_URL
-  console.log(moneyvill_url)
+  // console.log(moneyvill_url)
   useEffect(() => {
     const nationId = 1; // 전달할 nationId
     const socket = new WebSocket(moneyvill_url + `/ws/db-data?nationId=${nationId}`);
@@ -47,7 +47,7 @@ const Scoreboard = () => {
     };
 
     socket.onmessage = (event) => {
-      console.log('받은 데이터:', event.data);
+      // console.log('받은 데이터:', event.data);
       try {
         const parsedData = JSON.parse(event.data);
         setPlayers(parsedData); // 플레이어 데이터 업데이트
@@ -69,19 +69,15 @@ const Scoreboard = () => {
         setError('WebSocket 연결이 닫혔습니다.');
       }
     };
-
-    // return () => {
-    //   socket.close(); // 컴포넌트 언마운트 시 WebSocket 연결 해제
-    // };
   }, []);
 
   if (isLoading) {
     return <ScoreboardWrapper>Loading...</ScoreboardWrapper>; // 로딩 상태 표시
   }
 
-  if (error) {
-    return <ScoreboardWrapper>{error}</ScoreboardWrapper>; // 오류 메시지 표시
-  }
+  // if (error) {
+  //   return <ScoreboardWrapper>{error}</ScoreboardWrapper>; // 오류 메시지 표시
+  // }
 
   return (
     <ScoreboardWrapper>

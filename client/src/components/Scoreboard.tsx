@@ -34,20 +34,21 @@ const PlayerStats = styled.span`
 
 const Scoreboard = () => {
   const [players, setPlayers] = useState<Array<{ name: string; creditRating: number; amount: number }>>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true); // 로딩 상태
-  const [error, setError] = useState<string | null>(null); // 오류 상태
-  const moneyvill_url = import.meta.env.VITE_MONEYVILL_URL
-  // console.log(moneyvill_url)
-  useEffect(() => {
-    const nationId = 1; // 전달할 nationId
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const moneyvill_url = import.meta.env.VITE_MONEYVILL_URL;
+  const nationId = 1; // 전달할 nationId
+
+  const connectWebSocket = () => {
     const socket = new WebSocket(moneyvill_url + `/ws/db-data?nationId=${nationId}`);
 
     socket.onopen = () => {
       console.log('WebSocket 연결 성공');
+      setError(null); // 이전 오류 초기화
     };
 
     socket.onmessage = (event) => {
-      // console.log('받은 데이터:', event.data);
       try {
         const parsedData = JSON.parse(event.data);
         setPlayers(parsedData); // 플레이어 데이터 업데이트
@@ -65,19 +66,25 @@ const Scoreboard = () => {
 
     socket.onclose = (event) => {
       console.log('WebSocket 닫힘:', event.code, event.reason);
-      if (!error) {
-        setError('WebSocket 연결이 닫혔습니다.');
-      }
+      // setError('WebSocket 연결이 닫혔습니다. 다시 연결 시도 중...');
+      setTimeout(() => connectWebSocket(), 3000); // 3초 후 다시 연결 시도
+    };
+
+    return socket;
+  };
+
+  useEffect(() => {
+    const socket = connectWebSocket();
+
+    // 컴포넌트가 언마운트될 때 WebSocket 닫기
+    return () => {
+      socket.close();
     };
   }, []);
 
   if (isLoading) {
-    return <ScoreboardWrapper>Loading...</ScoreboardWrapper>; // 로딩 상태 표시
+    return <ScoreboardWrapper>Loading...</ScoreboardWrapper>;
   }
-
-  // if (error) {
-  //   return <ScoreboardWrapper>{error}</ScoreboardWrapper>; // 오류 메시지 표시
-  // }
 
   return (
     <ScoreboardWrapper>
@@ -90,6 +97,7 @@ const Scoreboard = () => {
           </PlayerStats>
         </PlayerRow>
       ))}
+      {error && <div style={{ color: 'red', marginTop: '10px' }}>{error}</div>}
     </ScoreboardWrapper>
   );
 };

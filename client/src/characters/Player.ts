@@ -111,6 +111,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     this.progressValue = Phaser.Math.Clamp(value, 0, 100);
     this.updateProgressBar();
     if (this.progressValue <= 0) {
+      this.onProgressZero()
       this.hideProgressBar()
     }
   }
@@ -129,6 +130,10 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
       this.progressEvent.remove();
       this.progressEvent = undefined;
     }
+  }
+
+  protected onProgressZero() {
+    // 기본 동작: 아무것도 하지 않음
   }
 
   decreaseProgressOverTime(duration: number) {

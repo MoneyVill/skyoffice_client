@@ -18,10 +18,9 @@ export const playerSlice = createSlice({
     },
     updatePlayer: (state, action: PayloadAction<{ name: string; data: Partial<IPlayer> }>) => {
       const { name, data } = action.payload;
-      const player = state.players.find((player) => player.name === name);
-      if (player) {
-        Object.assign(player, data);
-      }
+      state.players = state.players.map((player) =>
+        player.name === name ? { ...player, ...data } : player
+      );
     },
     updatePlayerName: (state, action: PayloadAction<{ oldName: string; newName: string }>) => {
       const { oldName, newName } = action.payload;

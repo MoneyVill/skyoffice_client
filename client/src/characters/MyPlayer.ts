@@ -16,6 +16,7 @@ import { NavKeys } from '../../../types/KeyboardState'
 import { JoystickMovement } from '../components/Joystick'
 import { openURL } from '../utils/helpers'
 import VendingMachine from '../items/VendingMachine'
+import { updatePlayer } from '../stores/PlayerStore'
 
 export default class MyPlayer extends Player {
   private playContainerBody: Phaser.Physics.Arcade.Body
@@ -37,6 +38,10 @@ export default class MyPlayer extends Player {
     this.playContainerBody = this.playerContainer.body as Phaser.Physics.Arcade.Body
   }
 
+  protected onProgressZero() {
+    this.setPlayerInfo(100, 20); // ProgressBar가 0에 도달했을 때 호출
+  }
+
   setPlayerName(name: string) {
     this.playerName.setText(name)
     phaserEvents.emit(Event.MY_PLAYER_NAME_CHANGE, name)
@@ -45,8 +50,17 @@ export default class MyPlayer extends Player {
 
   // money와 score 설정 메서드 추가
   setPlayerInfo(money: number, score: number) {
-    this.playerMoney = money
-    this.playerScore = score
+    this.playerMoney += money
+    this.playerScore += score
+    store.dispatch(
+      updatePlayer({
+        name: this.playerId,
+        data: {
+          money: this.playerMoney,
+          score: this.playerScore,
+        },
+      })
+    );
     phaserEvents.emit(Event.MY_PLAYER_INFO_CHANGE, this.playerMoney, this.playerScore)
   }
 

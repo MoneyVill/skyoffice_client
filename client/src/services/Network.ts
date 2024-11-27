@@ -123,10 +123,9 @@ export default class Network {
     // new instance added to the players MapSchema
     this.room.state.players.onAdd = (player: IPlayer, key: string) => {
       setTimeout(() => {
-
         store.dispatch(addPlayer(player))
       }, 1800)
-      if (key === this.mySessionId) return
+      // if (key === this.mySessionId) return
       // track changes on every child object inside the players MapSchema
       player.onChange = (changes) => {
         changes.forEach((change) => {
@@ -135,16 +134,18 @@ export default class Network {
             phaserEvents.emit(Event.PLAYER_UPDATED, field, value, key)
           }, 1000)
           // when a new player finished setting up player name
+          if ((field === 'money' || field === 'score') && value !== '') {
+            setTimeout(() => {
+              store.dispatch(updatePlayer({ name: key, data: { [field]: value }}))
+            }, 1000)
+          }
+          if (key === this.mySessionId) return
+
           if (field === 'name' && value !== '') {
             setTimeout(() => {
               phaserEvents.emit(Event.PLAYER_JOINED, player, key)
               store.dispatch(setPlayerNameMap({ id: key, name: value }))
               store.dispatch(pushPlayerJoinedMessage(value))
-            }, 1000)
-          }
-          if ((field === 'money' || field === 'score') && value !== '') {
-            setTimeout(() => {
-              store.dispatch(updatePlayer({ name: key, data: { [field]: value }}))
             }, 1000)
           }
         })

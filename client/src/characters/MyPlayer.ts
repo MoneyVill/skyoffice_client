@@ -141,12 +141,6 @@ export default class MyPlayer extends Player {
 
         if (Phaser.Input.Keyboard.JustDown(keyX) && item?.itemType === ItemType.VENDINGMACHINE) {
           const vendingmachineItem = item as VendingMachine
-          /**
-           * move player to the chair and play sit animation
-           * a delay is called to wait for player movement (from previous velocity) to end
-           * as the player tends to move one more frame before sitting down causing player
-           * not sitting at the center of the chair
-           */
           this.scene.time.addEvent({
             delay: 10,
             callback: () => {
@@ -182,6 +176,9 @@ export default class MyPlayer extends Player {
           vendingmachineItem.setDialogBox('Press X to leave')
           this.chairOnSit = vendingmachineItem
           this.playerBehavior = PlayerBehavior.WORKING
+
+          this.showProgressBar();
+          this.decreaseProgressOverTime(5000);
           return
         }
 
@@ -263,6 +260,7 @@ export default class MyPlayer extends Player {
           this.play(parts.join('_'), true)
           this.playerBehavior = PlayerBehavior.IDLE
           this.chairOnSit?.clearDialogBox()
+          this.hideProgressBar();
           playerSelector.setPosition(this.x, this.y)
           playerSelector.update(this, cursors)
           network.updatePlayer(this.x, this.y, this.anims.currentAnim.key)

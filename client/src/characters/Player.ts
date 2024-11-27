@@ -23,6 +23,10 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
   playerContainer: Phaser.GameObjects.Container
   private playerDialogBubble: Phaser.GameObjects.Container
   private timeoutID?: number
+  private progressEvent?: Phaser.Time.TimerEvent; // progress 이벤트를 저장
+  private progressBar: Phaser.GameObjects.Graphics; // Progress bar 추가
+  private progressValue: number = 100; // Progress bar의 초기 값
+  private progressBarVisible: boolean = false; // 프로그레스 바 초기 숨김 상태
 
   constructor(
     scene: Phaser.Scene,
@@ -43,6 +47,10 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     this.setDepth(this.y)
 
     this.anims.play(`${this.playerTexture}_idle_down`, true)
+
+    this.progressBar = scene.add.graphics();
+    this.progressBar.setVisible(false);
+    this.updateProgressBar();
 
     this.playerContainer = this.scene.add.container(this.x, this.y - 30).setDepth(5000)
 
@@ -65,6 +73,81 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     playContainerBody
       .setSize(this.width * collisionScale[0], this.height * collisionScale[1])
       .setOffset(-8, this.height * (1 - collisionScale[1]) + 6)
+  }
+
+  private updateProgressBar() {
+    if (!this.progressBarVisible) {
+      return
+    }
+    const barWidth = 50;
+    const barHeight = 8;
+    const xOffset = -barWidth / 2;
+    const yOffset = -this.height / 2 - 25;
+  
+    let shakeX = 0;
+    let shakeY = 0;
+    if (this.progressValue <= 30) {
+      shakeX = Phaser.Math.Between(-4, 4);
+      shakeY = Phaser.Math.Between(-2, 2);
+    }
+  
+    this.progressBar.clear();
+    this.progressBar.setDepth(10001);
+  
+    this.progressBar.fillStyle(0x000000, 0.5);
+    this.progressBar.fillRect(this.x + xOffset + shakeX, this.y + yOffset + shakeY, barWidth, barHeight);
+  
+    if (this.progressValue <= 50 && this.progressValue > 30) {
+      this.progressBar.fillStyle(0xFFA500, 1);
+    } else if (this.progressValue <= 30) {
+      this.progressBar.fillStyle(0xff0000, 1);
+    } else {
+      this.progressBar.fillStyle(0x00ff00, 1);
+    }
+    this.progressBar.fillRect(this.x + xOffset + shakeX, this.y + yOffset + shakeY, (this.progressValue / 100) * barWidth, barHeight);
+  }
+
+  setProgress(value: number) {
+    this.progressValue = Phaser.Math.Clamp(value, 0, 100);
+    this.updateProgressBar();
+    if (this.progressValue <= 0) {
+      this.hideProgressBar()
+    }
+  }
+
+  showProgressBar() {
+    this.progressBarVisible = true
+    this.progressBar.setVisible(true)
+    this.progressValue = 100
+    this.updateProgressBar()
+  }
+
+  hideProgressBar() {
+    this.progressBarVisible = false
+    this.progressBar.setVisible(false)
+    if (this.progressEvent) {
+      this.progressEvent.remove();
+      this.progressEvent = undefined;
+    }
+  }
+
+  decreaseProgressOverTime(duration: number) {
+    if (this.progressEvent) {
+      this.progressEvent.remove();
+    }
+    this.progressEvent = this.scene.time.addEvent({
+      delay: duration / 100,
+      repeat: 100,
+      callback: () => {
+        this.setProgress(this.progressValue - 1);
+      },
+      callbackScope: this,
+    });
+  }
+
+  preUpdate(time: number, delta: number) {
+    super.preUpdate(time, delta);
+    this.updateProgressBar();
   }
 
   updateDialogBubble(content: string) {

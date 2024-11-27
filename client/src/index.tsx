@@ -9,7 +9,6 @@ import './PhaserGame'
 import muiTheme from './MuiTheme'
 import App from './App'
 import store from './stores'
-import Scoreboard from './components/Scoreboard'
 
 const container = document.getElementById('root')
 const root = createRoot(container!)
@@ -17,8 +16,7 @@ root.render(
   <React.StrictMode>
     <Provider store={store}>
       <ThemeProvider theme={muiTheme}>
-        <><Scoreboard/>
-        <App /></>
+        <App />
       </ThemeProvider>
     </Provider>
   </React.StrictMode>

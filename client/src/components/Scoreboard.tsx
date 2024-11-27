@@ -101,7 +101,7 @@ const Scoreboard = () => {
                 <LabelText>{showScoreboard ? <RainbowText>머니빌 점수판</RainbowText> : '돈을 많이 벌면 승리!'}</LabelText>
                 <ArrowIcon>{showScoreboard ? '▲' : '▼'}</ArrowIcon>
             </LabelWrapper>
-            {showScoreboard && <CollapsibleScoreboard />}
+        {showScoreboard && <CollapsibleScoreboard />}
         </>
     );
   };

@@ -23,6 +23,13 @@ export const playerSlice = createSlice({
         Object.assign(player, data);
       }
     },
+    updatePlayerName: (state, action: PayloadAction<{ oldName: string; newName: string }>) => {
+      const { oldName, newName } = action.payload;
+      const player = state.players.find((player) => player.name === oldName);
+      if (player) {
+        player.name = newName; // 기존 플레이어 이름을 새 이름으로 업데이트
+      }
+    },
     removePlayer: (state, action: PayloadAction<IPlayer>) => {
       const playerToRemove = action.payload;
       state.players = state.players.filter((player) => player.name !== playerToRemove.name);
@@ -30,6 +37,11 @@ export const playerSlice = createSlice({
   },
 });
 
-export const { addPlayer, updatePlayer, removePlayer } = playerSlice.actions;
+export const { 
+  addPlayer,
+  updatePlayer, 
+  updatePlayerName, 
+  removePlayer 
+} = playerSlice.actions;
 
 export default playerSlice.reducer;

@@ -18,6 +18,7 @@ import Lucy from '../images/login/Lucy_login.png'
 import Nancy from '../images/login/Nancy_login.png'
 import { useAppSelector, useAppDispatch } from '../hooks'
 import { setLoggedIn } from '../stores/UserStore'
+import { updatePlayerName } from '../stores/PlayerStore'
 import { getAvatarString, getColorByString } from '../util'
 
 import phaserGame from '../PhaserGame'
@@ -170,6 +171,7 @@ export default function LoginDialog() {
       game.myPlayer.setPlayerTexture(avatars[avatarIndex].name)
       game.network.readyToConnect()
       dispatch(setLoggedIn(true))
+      dispatch(updatePlayerName({ oldName: '', newName: name }));
     }
   }
 

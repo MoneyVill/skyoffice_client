@@ -23,13 +23,17 @@ export default class MyPlayer extends Player {
   public joystickMovement?: JoystickMovement
   constructor(
     scene: Phaser.Scene,
+    money: number,
+    score: number,
     x: number,
     y: number,
     texture: string,
     id: string,
     frame?: string | number
   ) {
-    super(scene, x, y, texture, id, frame)
+    super(scene, money, score, x, y, texture, id, frame)
+    this.playerMoney = money
+    this.playerScore = score
     this.playContainerBody = this.playerContainer.body as Phaser.Physics.Arcade.Body
   }
 
@@ -37,6 +41,13 @@ export default class MyPlayer extends Player {
     this.playerName.setText(name)
     phaserEvents.emit(Event.MY_PLAYER_NAME_CHANGE, name)
     store.dispatch(pushPlayerJoinedMessage(name))
+  }
+
+  // money와 score 설정 메서드 추가
+  setPlayerInfo(money: number, score: number) {
+    this.playerMoney = money
+    this.playerScore = score
+    phaserEvents.emit(Event.MY_PLAYER_INFO_CHANGE, this.playerMoney, this.playerScore)
   }
 
   setPlayerTexture(texture: string) {
@@ -264,7 +275,7 @@ export default class MyPlayer extends Player {
 declare global {
   namespace Phaser.GameObjects {
     interface GameObjectFactory {
-      myPlayer(x: number, y: number, texture: string, id: string, frame?: string | number): MyPlayer
+      myPlayer(money: number, score: number, x: number, y: number, texture: string, id: string, frame?: string | number): MyPlayer
     }
   }
 }
@@ -273,13 +284,15 @@ Phaser.GameObjects.GameObjectFactory.register(
   'myPlayer',
   function (
     this: Phaser.GameObjects.GameObjectFactory,
+    money: number,
+    score: number,
     x: number,
     y: number,
     texture: string,
     id: string,
     frame?: string | number
   ) {
-    const sprite = new MyPlayer(this.scene, x, y, texture, id, frame)
+    const sprite = new MyPlayer(this.scene, money, score, x, y, texture, id, frame)
 
     this.displayList.add(sprite)
     this.updateList.add(sprite)

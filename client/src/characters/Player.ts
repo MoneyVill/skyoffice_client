@@ -13,6 +13,8 @@ export const sittingShiftData = {
 
 export default class Player extends Phaser.Physics.Arcade.Sprite {
   playerId: string
+  playerMoney: number
+  playerScore: number
   playerTexture: string
   playerBehavior = PlayerBehavior.IDLE
   readyToConnect = false
@@ -24,6 +26,8 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
 
   constructor(
     scene: Phaser.Scene,
+    money: number,
+    score: number,
     x: number,
     y: number,
     texture: string,
@@ -33,6 +37,8 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     super(scene, x, y, texture, frame)
 
     this.playerId = id
+    this.playerMoney = money
+    this.playerScore = score
     this.playerTexture = texture
     this.setDepth(this.y)
 

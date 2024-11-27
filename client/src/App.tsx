@@ -27,7 +27,6 @@ function App() {
   // const videoConnected = useAppSelector((state) => state.user.videoConnected)
   const roomJoined = useAppSelector((state) => state.room.roomJoined)
 
-
   let ui: JSX.Element
   if (loggedIn) {
     if (computerDialogOpen) {
@@ -41,7 +40,7 @@ function App() {
         /* Render Chat or VideoConnectionDialog if no dialogs are opened. */
         <>
           <Chat />
-          {/* <Scoreboard/> */}
+          <Scoreboard />
           {/* Render VideoConnectionDialog if user is not connected to a webcam. */}
           {/* {!videoConnected && <VideoConnectionDialog />} */}
           <MobileVirtualJoystick />

@@ -78,11 +78,14 @@ export default class Game extends Phaser.Scene {
     createCharacterAnims(this.anims)
 
     this.map = this.make.tilemap({ key: 'tilemap' })
+
     const FloorAndGround = this.map.addTilesetImage('FloorAndGround', 'tiles_wall')
+    const mark = this.map.addTilesetImage('mark','tiles_wall2')
 
     const groundLayer = this.map.createLayer('Ground', FloorAndGround)
+    const groundLayer2 = this.map.createLayer('Ground2', mark)
     groundLayer.setCollisionByProperty({ collides: true })
-
+    groundLayer2.setCollisionByProperty({ collides: true })
     // debugDraw(groundLayer, this)
 
     this.myPlayer = this.add.myPlayer(0, 0, 705, 500, 'adam', this.network.mySessionId)

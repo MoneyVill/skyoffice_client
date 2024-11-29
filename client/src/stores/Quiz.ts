@@ -12,15 +12,30 @@ export default class Quiz {
     this.scene = scene;
   }
 
-  public showQuiz() {
+  public showQuiz(quizType: string) {
     if (this.isActive) {
       return;
     }
     this.isActive = true;
 
+    // Define quiz questions based on the quiz type
+    switch (quizType) {
+    case 'quiz_0':
+      this.questionText = 'What is 2 + 2?';
+      break;
+    case 'quiz_1':
+      this.questionText = 'Is the Earth round?';
+      break;
+    case 'quiz_2':
+      this.questionText = 'Which is the largest planet?';
+      break;
+    default:
+      this.questionText = 'Default question';
+  }
+
     // Position the quiz in the center of the game window
-    const centerX = this.scene.scale.width / 5;
-    const centerY = this.scene.scale.height / 5;
+    const centerX = this.scene.scale.width / 2;
+    const centerY = this.scene.scale.height / 2;
 
     // Create a semi-transparent background
     const background = this.scene.add.rectangle(centerX, centerY, 400, 200, 0x000000, 0.7);
@@ -76,8 +91,8 @@ export default class Quiz {
   }
 
   private displayQuizResult(resultText: string) {
-    const centerX = this.scene.scale.width / 5;
-    const centerY = this.scene.scale.height / 3 - 100;
+    const centerX = this.scene.scale.width / 2;
+    const centerY = this.scene.scale.height / 2;
 
     // Display result to the player
     const result = this.scene.add
@@ -91,14 +106,14 @@ export default class Quiz {
     result.setDepth(1000);
 
     // Hide result after 2 seconds
-    this.scene.time.delayedCall(2000, () => {
+    this.scene.time.delayedCall(700, () => {
       result.destroy();
     });
   }
 
   private cleanupQuizUI() {
     if (this.quizContainer) {
-      this.quizContainer.destroy();
+      this.quizContainer.destroy(true);
       this.quizContainer = undefined;
     }
     this.isActive = false;
@@ -113,5 +128,6 @@ export default class Quiz {
       return;
     }
     this.cleanupQuizUI();
+    console.log('Quiz UI hidden'); 
   }
 }

@@ -119,8 +119,8 @@ export default class Game extends Phaser.Scene {
 
     // Initialize the quiz instance
     this.quiz = new Quiz(this)
-    this.events.on('startQuiz', () => {
-      this.quiz.showQuiz();
+    this.events.on('startQuiz', (quizType: string) => {
+      this.quiz.showQuiz(quizType); // Pass the quiz type to the Quiz class
     });
     this.events.on('stopQuiz', () => {
       this.quiz.hideQuiz();
@@ -160,11 +160,18 @@ export default class Game extends Phaser.Scene {
     })
 
     // Import vending machines from the tilemap
-    const vendingMachines = this.physics.add.staticGroup({ classType: VendingMachine })
-    const vendingMachineLayer = this.map.getObjectLayer('VendingMachine')
+    const vendingMachines = this.physics.add.staticGroup({ classType: VendingMachine });
+    const vendingMachineLayer = this.map.getObjectLayer('VendingMachine');
     vendingMachineLayer.objects.forEach((obj, i) => {
-      this.addObjectFromTiled(vendingMachines, obj, 'vendingmachines', 'vendingmachine')
-    })
+      const vendingMachine = this.addObjectFromTiled(
+        vendingMachines,
+        obj,
+        'vendingmachines',
+        'vendingmachine'
+      ) as VendingMachine;
+      vendingMachine.setData('id', `vending_machine_${i}`); // Assign unique IDs
+    });
+    
 
     // Import other objects from the tilemap
     this.addGroupFromTiled('Wall', 'tiles_wall', 'FloorAndGround', false)
@@ -212,12 +219,14 @@ export default class Game extends Phaser.Scene {
       if (currentItem === selectionItem || currentItem.depth >= selectionItem.depth) {
         return
       }
-      if (this.myPlayer.playerBehavior !== PlayerBehavior.SITTING) currentItem.clearDialogBox()
+      if (this.myPlayer.playerBehavior !== PlayerBehavior.SITTING) {
+        currentItem.clearDialogBox()
     }
-
-    playerSelector.selectedItem = selectionItem
-    selectionItem.onOverlapDialog()
   }
+    playerSelector.selectedItem = selectionItem;
+    selectionItem.onOverlapDialog();
+
+}
 
   private addObjectFromTiled(
     group: Phaser.Physics.Arcade.StaticGroup,

@@ -162,11 +162,24 @@ export default class MyPlayer extends Player {
 
         // If press Q in front of a vending machine (or any other item triggering the quiz)
         if (Phaser.Input.Keyboard.JustDown(keyQ) && item?.itemType === ItemType.VENDINGMACHINE) {
-
-          // If you want to handle vending machine interactions separately
           const vendingMachineItem = item as VendingMachine;
 
-          this.scene.events.emit('startQuiz');
+          const vendingMachineId = vendingMachineItem.getData('id'); // Get the vending machine ID
+
+          // Emit the startQuiz event with the appropriate quiz type
+          switch (vendingMachineId) {
+            case 'vending_machine_0':
+              this.scene.events.emit('startQuiz', 'quiz_0'); // Trigger quiz 0
+              break;
+            case 'vending_machine_1':
+              this.scene.events.emit('startQuiz', 'quiz_1'); // Trigger quiz 1
+              break;
+            case 'vending_machine_2':
+              this.scene.events.emit('startQuiz', 'quiz_2'); // Trigger quiz 2
+              break;
+            default:
+              console.error('Unknown vending machine ID:', vendingMachineId);
+          }
           // Set up player behavior as 'WORKING' during the quiz (optional, if needed)
           this.playerBehavior = PlayerBehavior.WORKING;
 
@@ -204,7 +217,9 @@ export default class MyPlayer extends Player {
           });
           // Set up new dialog as player starts working
           vendingMachineItem.clearDialogBox();
-          vendingMachineItem.setDialogBox('Press Q to leave');
+          // vendingMachineItem.setDialogBox('Press Q to leave');
+
+
           this.chairOnSit = vendingMachineItem;
           this.playerBehavior = PlayerBehavior.WORKING;
 

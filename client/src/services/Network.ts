@@ -1,3 +1,5 @@
+//client/src/services/Network.ts
+
 import { Client, Room } from 'colyseus.js'
 import { IComputer, IOfficeState, IPlayer, IWhiteboard } from '../../../types/IOfficeState'
 import { Message } from '../../../types/Messages'

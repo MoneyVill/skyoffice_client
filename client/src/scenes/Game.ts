@@ -1,26 +1,35 @@
+// client/src/scenes/Game.ts
+
 import Phaser from 'phaser'
 
-// import { debugDraw } from '../utils/debug'
+// Import necessary animations and items
 import { createCharacterAnims } from '../anims/CharacterAnims'
-
 import Item from '../items/Item'
 import Chair from '../items/Chair'
 import Computer from '../items/Computer'
 import Whiteboard from '../items/Whiteboard'
 import VendingMachine from '../items/VendingMachine'
+
+// Import custom player classes
 import '../characters/MyPlayer'
 import '../characters/OtherPlayer'
 import MyPlayer from '../characters/MyPlayer'
 import OtherPlayer from '../characters/OtherPlayer'
 import PlayerSelector from '../characters/PlayerSelector'
+
+// Import network and events
 import Network from '../services/Network'
 import { IPlayer } from '../../../types/IOfficeState'
 import { PlayerBehavior } from '../../../types/PlayerBehavior'
 import { ItemType } from '../../../types/Items'
 
+// Import store and events
 import store from '../stores'
 import { setFocused, setShowChat } from '../stores/ChatStore'
 import { NavKeys, Keyboard } from '../../../types/KeyboardState'
+
+// Import the Quiz class with the correct path
+import Quiz from '../stores/Quiz'
 
 export default class Game extends Phaser.Scene {
   network!: Network
@@ -28,6 +37,8 @@ export default class Game extends Phaser.Scene {
   private keyE!: Phaser.Input.Keyboard.Key
   private keyR!: Phaser.Input.Keyboard.Key
   private keyX!: Phaser.Input.Keyboard.Key
+  private keyQ!: Phaser.Input.Keyboard.Key
+  private keyO!: Phaser.Input.Keyboard.Key
   private map!: Phaser.Tilemaps.Tilemap
   myPlayer!: MyPlayer
   private playerSelector!: Phaser.GameObjects.Zone
@@ -36,20 +47,28 @@ export default class Game extends Phaser.Scene {
   computerMap = new Map<string, Computer>()
   private whiteboardMap = new Map<string, Whiteboard>()
 
+  // Quiz instance
+  private quiz!: Quiz
+
   constructor() {
     super('game')
   }
 
   registerKeys() {
+    // Register navigation keys
     this.cursors = {
       ...this.input.keyboard.createCursorKeys(),
       ...(this.input.keyboard.addKeys('W,S,A,D') as Keyboard),
     }
 
-    // maybe we can have a dedicated method for adding keys if more keys are needed in the future
+    // Register action keys
     this.keyE = this.input.keyboard.addKey('E')
     this.keyR = this.input.keyboard.addKey('R')
     this.keyX = this.input.keyboard.addKey('X')
+    this.keyQ = this.input.keyboard.addKey('Q')
+    this.keyO = this.input.keyboard.addKey('O')
+
+    // Disable global key capture for chat input
     this.input.keyboard.disableGlobalCapture()
     this.input.keyboard.on('keydown-ENTER', (event) => {
       store.dispatch(setShowChat(true))
@@ -75,32 +94,46 @@ export default class Game extends Phaser.Scene {
       this.network = data.network
     }
 
+    // Create character animations
     createCharacterAnims(this.anims)
-
+    
+    // Load the tilemap
     this.map = this.make.tilemap({ key: 'tilemap' })
 
+    // Add tilesets
     const FloorAndGround = this.map.addTilesetImage('FloorAndGround', 'tiles_wall')
-    const mark = this.map.addTilesetImage('mark','tiles_wall2')
+    const mark = this.map.addTilesetImage('mark', 'tiles_wall2')
 
+    // Create map layers
     const groundLayer = this.map.createLayer('Ground', FloorAndGround)
     const groundLayer2 = this.map.createLayer('Ground2', mark)
     groundLayer.setCollisionByProperty({ collides: true })
     groundLayer2.setCollisionByProperty({ collides: true })
-    // debugDraw(groundLayer, this)
 
+    // Create the player
     this.myPlayer = this.add.myPlayer(0, 0, 705, 500, 'adam', this.network.mySessionId)
     this.playerSelector = new PlayerSelector(this, 0, 0, 16, 16)
 
-    // import chair objects from Tiled map to Phaser
+    // Register keys
+    this.registerKeys()
+
+    // Initialize the quiz instance
+    this.quiz = new Quiz(this)
+    this.events.on('startQuiz', () => {
+      this.quiz.showQuiz();
+    });
+    this.events.on('stopQuiz', () => {
+      this.quiz.hideQuiz();
+    });
+    // Import chairs from the tilemap
     const chairs = this.physics.add.staticGroup({ classType: Chair })
     const chairLayer = this.map.getObjectLayer('Chair')
     chairLayer.objects.forEach((chairObj) => {
       const item = this.addObjectFromTiled(chairs, chairObj, 'chairs', 'chair') as Chair
-      // custom properties[0] is the object direction specified in Tiled
       item.itemDirection = chairObj.properties[0].value
     })
 
-    // import computers objects from Tiled map to Phaser
+    // Import computers from the tilemap
     const computers = this.physics.add.staticGroup({ classType: Computer })
     const computerLayer = this.map.getObjectLayer('Computer')
     computerLayer.objects.forEach((obj, i) => {
@@ -111,7 +144,7 @@ export default class Game extends Phaser.Scene {
       this.computerMap.set(id, item)
     })
 
-    // import whiteboards objects from Tiled map to Phaser
+    // Import whiteboards from the tilemap
     const whiteboards = this.physics.add.staticGroup({ classType: Whiteboard })
     const whiteboardLayer = this.map.getObjectLayer('Whiteboard')
     whiteboardLayer.objects.forEach((obj, i) => {
@@ -126,14 +159,14 @@ export default class Game extends Phaser.Scene {
       this.whiteboardMap.set(id, item)
     })
 
-    // import vending machine objects from Tiled map to Phaser
+    // Import vending machines from the tilemap
     const vendingMachines = this.physics.add.staticGroup({ classType: VendingMachine })
     const vendingMachineLayer = this.map.getObjectLayer('VendingMachine')
     vendingMachineLayer.objects.forEach((obj, i) => {
       this.addObjectFromTiled(vendingMachines, obj, 'vendingmachines', 'vendingmachine')
     })
 
-    // import other objects from Tiled map to Phaser
+    // Import other objects from the tilemap
     this.addGroupFromTiled('Wall', 'tiles_wall', 'FloorAndGround', false)
     this.addGroupFromTiled('Objects', 'office', 'Modern_Office_Black_Shadow', false)
     this.addGroupFromTiled('Newobject', 'school', 'Classroom_and_library', true)
@@ -142,14 +175,17 @@ export default class Game extends Phaser.Scene {
     this.addGroupFromTiled('GenericObjectsOnCollide', 'generic', 'Generic', true)
     this.addGroupFromTiled('Basement', 'basement', 'Basement', true)
 
+    // Group for other players
     this.otherPlayers = this.physics.add.group({ classType: OtherPlayer })
 
+    // Set up camera
     this.cameras.main.zoom = 1.5
     this.cameras.main.startFollow(this.myPlayer, true)
 
     this.physics.add.collider([this.myPlayer, this.myPlayer.playerContainer], groundLayer)
     this.physics.add.collider([this.myPlayer, this.myPlayer.playerContainer], vendingMachines)
 
+    // Set up overlap with items
     this.physics.add.overlap(
       this.playerSelector,
       [chairs, computers, whiteboards, vendingMachines],
@@ -158,15 +194,7 @@ export default class Game extends Phaser.Scene {
       this
     )
 
-    // this.physics.add.overlap(
-    //   this.myPlayer,
-    //   this.otherPlayers,
-    //   // this.handlePlayersOverlap,
-    //   undefined,
-    //   this
-    // )
-
-    // register network event listeners
+    // Register network event listeners
     this.network.onPlayerJoined(this.handlePlayerJoined, this)
     this.network.onPlayerLeft(this.handlePlayerLeft, this)
     this.network.onMyPlayerReady(this.handleMyPlayerReady, this)
@@ -179,17 +207,14 @@ export default class Game extends Phaser.Scene {
 
   private handleItemSelectorOverlap(playerSelector, selectionItem) {
     const currentItem = playerSelector.selectedItem as Item
-    // currentItem is undefined if nothing was perviously selected
+    // Handle item selection logic
     if (currentItem) {
-      // if the selection has not changed, do nothing
       if (currentItem === selectionItem || currentItem.depth >= selectionItem.depth) {
         return
       }
-      // if selection changes, clear pervious dialog
       if (this.myPlayer.playerBehavior !== PlayerBehavior.SITTING) currentItem.clearDialogBox()
     }
 
-    // set selected item and set up new dialog
     playerSelector.selectedItem = selectionItem
     selectionItem.onOverlapDialog()
   }
@@ -227,14 +252,22 @@ export default class Game extends Phaser.Scene {
       this.physics.add.collider([this.myPlayer, this.myPlayer.playerContainer], group)
   }
 
-  // function to add new player to the otherPlayer group
+  // Function to add new player to the otherPlayers group
   private handlePlayerJoined(newPlayer: IPlayer, id: string) {
-    const otherPlayer = this.add.otherPlayer(newPlayer.money, newPlayer.score, newPlayer.x, newPlayer.y, 'adam', id, newPlayer.name)
+    const otherPlayer = this.add.otherPlayer(
+      newPlayer.money,
+      newPlayer.score,
+      newPlayer.x,
+      newPlayer.y,
+      'adam',
+      id,
+      newPlayer.name
+    )
     this.otherPlayers.add(otherPlayer)
     this.otherPlayerMap.set(id, otherPlayer)
   }
 
-  // function to remove the player who left from the otherPlayer group
+  // Function to remove a player who left
   private handlePlayerLeft(id: string) {
     if (this.otherPlayerMap.has(id)) {
       const otherPlayer = this.otherPlayerMap.get(id)
@@ -288,9 +321,22 @@ export default class Game extends Phaser.Scene {
   }
 
   update(t: number, dt: number) {
+    // Update the quiz if it's active
+    if (this.quiz.isQuizActive()) {
+      this.quiz.update(this.keyO, this.keyX)
+      // Note: Player can still move during the quiz
+    }
+
     if (this.myPlayer && this.network) {
       this.playerSelector.update(this.myPlayer, this.cursors)
-      this.myPlayer.update(this.playerSelector, this.cursors, this.keyE, this.keyR, this.keyX, this.network)
+      this.myPlayer.update(
+        this.playerSelector,
+        this.cursors,
+        this.keyE,
+        this.keyR,
+        this.keyQ,
+        this.network
+      )
     }
   }
 }

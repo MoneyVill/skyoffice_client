@@ -1,3 +1,5 @@
+//client/src/scenes/Bootstrap.ts
+
 import Phaser from 'phaser'
 import Network from '../services/Network'
 import { BackgroundMode } from '../../../types/BackgroundMode'

@@ -1,3 +1,5 @@
+//client/src/stores/index.ts
+
 import { enableMapSet } from 'immer'
 import { configureStore } from '@reduxjs/toolkit'
 import userReducer from './UserStore'

@@ -1,3 +1,5 @@
+//client/src/characters/Player.ts
+
 import Phaser from 'phaser'
 import { PlayerBehavior } from '../../../types/PlayerBehavior'
 /**

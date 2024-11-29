@@ -1,3 +1,5 @@
+//client/src/scenes/Background.ts
+
 import Phaser from 'phaser'
 import { BackgroundMode } from '../../../types/BackgroundMode'
 

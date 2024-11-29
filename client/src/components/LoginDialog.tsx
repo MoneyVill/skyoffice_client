@@ -23,6 +23,8 @@ import { getAvatarString, getColorByString } from '../util'
 import phaserGame from '../PhaserGame'
 import Game from '../scenes/Game'
 
+import { usePostUsersLoginMutation } from '../stores/NonAuthApi';
+
 const Wrapper = styled.form`
   position: fixed;
   top: 50%;
@@ -159,19 +161,60 @@ export default function LoginDialog() {
 
   const game = phaserGame.scene.keys.game as Game
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    if (name === '') {
-      setNameFieldEmpty(true)
-    } else if (roomJoined) {
-      console.log('Join! Name:', name, 'Avatar:', avatars[avatarIndex].name)
-      game.registerKeys()
-      game.myPlayer.setPlayerName(name)
-      game.myPlayer.setPlayerTexture(avatars[avatarIndex].name)
-      game.network.readyToConnect()
-      dispatch(setLoggedIn(true))
-    }
+  interface LoginInterFace {
+    account: string;
+    password: string;
   }
+  const [loginAccount, setLoginAccount] = useState<LoginInterFace>({
+    account: '',
+    password: ''
+  });
+  const [postUsersLogin, { isSuccess: isSuccess1, isError: isError1 }] = usePostUsersLoginMutation();
+  const onChangeAccount = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setLoginAccount({
+      ...loginAccount,
+      [event.target.name]: event.target.value, // name 속성에 따라 상태를 동적으로 업데이트
+    });
+  };
+  
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+  
+    // loginAccount.account가 비어 있으면 경고 표시
+    if (loginAccount.account.trim() === '') {
+      setNameFieldEmpty(true);
+      return;
+    }
+  
+    // 아이디가 입력되었으면 경고를 해제
+    setNameFieldEmpty(false);
+  
+    if (roomJoined) {
+      console.log('Join! Account:', loginAccount.account, 'Avatar:', avatars[avatarIndex].name);
+      game.registerKeys();
+      game.myPlayer.setPlayerName(loginAccount.account); // account를 player name으로 설정
+      game.myPlayer.setPlayerTexture(avatars[avatarIndex].name);
+      game.network.readyToConnect();
+  
+      try {
+        const loginData: any = await postUsersLogin(loginAccount);
+        if (loginData.data) {
+          const { accessToken, refreshToken, nickname } = loginData.data.data;
+          localStorage.setItem('accessToken', accessToken);
+          localStorage.setItem('refreshToken', refreshToken);
+          localStorage.setItem('nickname', nickname);
+
+          dispatch(setLoggedIn(true));
+        } else {
+          console.error('로그인 실패:', loginData?.error || 'Unknown Error');
+        }
+      } catch (error) {
+        console.error('로그인 중 오류:', error);
+      }
+    }
+  };
+  
 
   return (
     <Wrapper onSubmit={handleSubmit}>
@@ -187,16 +230,16 @@ export default function LoginDialog() {
       <Content>
         <Right>
           <TextField
+            name="account"
             autoFocus
             fullWidth
-            label="이름"
+            label="아이디"
             variant="outlined"
             color="secondary"
-            error={nameFieldEmpty}
-            helperText={nameFieldEmpty && 'Name is required'}
-            onInput={(e) => {
-              setName((e.target as HTMLInputElement).value)
-            }}
+            error={nameFieldEmpty} // 상태에 따라 에러 여부 표시
+            helperText={nameFieldEmpty ? '아이디를 입력해주세요.' : ''} // 경고 메시지 표시
+            value={loginAccount.account} // loginAccount.account와 동기화
+            onChange={onChangeAccount} // 상태 업데이트 핸들러 연결
           />
         </Right>
         <Left>

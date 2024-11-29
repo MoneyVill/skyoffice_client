@@ -28,7 +28,7 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   min-width: max-content;
-  max-width: 500px;
+  // max-width: 500px;
   .close {
     position: absolute;
     top: 0px;

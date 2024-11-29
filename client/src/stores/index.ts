@@ -7,6 +7,7 @@ import computerReducer from './ComputerStore'
 import whiteboardReducer from './WhiteboardStore'
 import chatReducer from './ChatStore'
 import roomReducer from './RoomStore'
+import { NonAuthApi } from './NonAuthApi';
 
 enableMapSet()
 
@@ -17,13 +18,14 @@ const store = configureStore({
     whiteboard: whiteboardReducer,
     chat: chatReducer,
     room: roomReducer,
+    [NonAuthApi.reducerPath]: NonAuthApi.reducer,
   },
   // Temporary disable serialize check for redux as we store MediaStream in ComputerStore.
   // https://stackoverflow.com/a/63244831
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: false,
-    }),
+    }).concat(NonAuthApi.middleware),
 })
 
 // Infer the `RootState` and `AppDispatch` types from the store itself

@@ -11,13 +11,13 @@ import Computer from '../items/Computer';
 import Whiteboard from '../items/Whiteboard';
 import VendingMachine from '../items/VendingMachine';
 
-import { phaserEvents, Event } from '../events/EventCenter';
-import store from '../stores';
-import { pushPlayerJoinedMessage } from '../stores/ChatStore';
-import { ItemType } from '../../../types/Items';
-import { NavKeys } from '../../../types/KeyboardState';
-import { JoystickMovement } from '../components/Joystick';
-import { updatePlayer } from '../stores/PlayerStore';
+import { phaserEvents, Event } from '../events/EventCenter'
+import store from '../stores'
+import { pushPlayerJoinedMessage } from '../stores/ChatStore'
+import { ItemType } from '../../../types/Items'
+import { NavKeys } from '../../../types/KeyboardState'
+import { JoystickMovement } from '../components/Joystick'
+import { openURL } from '../utils/helpers'
 
 export default class MyPlayer extends Player {
   private playContainerBody: Phaser.Physics.Arcade.Body;
@@ -26,55 +26,23 @@ export default class MyPlayer extends Player {
 
   constructor(
     scene: Phaser.Scene,
-    money: number,
-    score: number,
     x: number,
     y: number,
     texture: string,
     id: string,
     frame?: string | number
   ) {
-    super(scene, money, score, x, y, texture, id, frame);
-    this.playerMoney = money;
-    this.playerScore = score;
-    this.playContainerBody = this.playerContainer.body as Phaser.Physics.Arcade.Body;
-
-    // Listen for the 'quizEnded' event
-    this.scene.events.on('quizEnded', () => {
-      this.hideProgressBar();
-      if (this.playerBehavior === PlayerBehavior.WORKING) {
-        this.playerBehavior = PlayerBehavior.IDLE;
-        const parts = this.anims.currentAnim.key.split('_');
-        parts[1] = 'idle';
-        this.play(parts.join('_'), true);
-      }
-    });
+    super(scene, x, y, texture, id, frame)
+    this.playContainerBody = this.playerContainer.body as Phaser.Physics.Arcade.Body
   }
 
   protected onProgressZero() {
-    this.setPlayerInfo(100, 20); // Called when progress bar reaches zero
   }
 
   setPlayerName(name: string) {
     this.playerName.setText(name);
     phaserEvents.emit(Event.MY_PLAYER_NAME_CHANGE, name);
     store.dispatch(pushPlayerJoinedMessage(name));
-  }
-
-  // Method to set player money and score
-  setPlayerInfo(money: number, score: number) {
-    this.playerMoney += money;
-    this.playerScore += score;
-    store.dispatch(
-      updatePlayer({
-        name: this.playerId,
-        data: {
-          money: this.playerMoney,
-          score: this.playerScore,
-        },
-      })
-    );
-    phaserEvents.emit(Event.MY_PLAYER_INFO_CHANGE, this.playerMoney, this.playerScore);
   }
 
   setPlayerTexture(texture: string) {
@@ -309,15 +277,7 @@ export default class MyPlayer extends Player {
 declare global {
   namespace Phaser.GameObjects {
     interface GameObjectFactory {
-      myPlayer(
-        money: number,
-        score: number,
-        x: number,
-        y: number,
-        texture: string,
-        id: string,
-        frame?: string | number
-      ): MyPlayer;
+      myPlayer(x: number, y: number, texture: string, id: string, frame?: string | number): MyPlayer
     }
   }
 }
@@ -326,15 +286,13 @@ Phaser.GameObjects.GameObjectFactory.register(
   'myPlayer',
   function (
     this: Phaser.GameObjects.GameObjectFactory,
-    money: number,
-    score: number,
     x: number,
     y: number,
     texture: string,
     id: string,
     frame?: string | number
   ) {
-    const sprite = new MyPlayer(this.scene, money, score, x, y, texture, id, frame);
+    const sprite = new MyPlayer(this.scene, x, y, texture, id, frame)
 
     this.displayList.add(sprite);
     this.updateList.add(sprite);

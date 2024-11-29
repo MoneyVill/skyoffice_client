@@ -17,8 +17,6 @@ export default class OtherPlayer extends Player {
 
   constructor(
     scene: Phaser.Scene,
-    money: number,
-    score: number,
     x: number,
     y: number,
     texture: string,
@@ -26,9 +24,7 @@ export default class OtherPlayer extends Player {
     name: string,
     frame?: string | number
   ) {
-    super(scene, money, score, x, y, texture, id, frame)
-    this.playerMoney = money
-    this.playerScore = score
+    super(scene, x, y, texture, id, frame)
     this.targetPosition = [x, y]
 
     this.playerName.setText(name)
@@ -57,18 +53,6 @@ export default class OtherPlayer extends Player {
       case 'name':
         if (typeof value === 'string') {
           this.playerName.setText(value)
-        }
-        break
-
-      case 'money':
-        if (typeof value === 'number') {
-          this.playerMoney = value
-        }
-        break
-
-      case 'score':
-        if (typeof value === 'number') {
-          this.playerScore = value
         }
         break
 
@@ -191,8 +175,6 @@ declare global {
   namespace Phaser.GameObjects {
     interface GameObjectFactory {
       otherPlayer(
-        money: number,
-        score: number,
         x: number,
         y: number,
         texture: string,
@@ -208,8 +190,6 @@ Phaser.GameObjects.GameObjectFactory.register(
   'otherPlayer',
   function (
     this: Phaser.GameObjects.GameObjectFactory,
-    money: number,
-    score: number,
     x: number,
     y: number,
     texture: string,
@@ -217,7 +197,7 @@ Phaser.GameObjects.GameObjectFactory.register(
     name: string,
     frame?: string | number
   ) {
-    const sprite = new OtherPlayer(this.scene, money, score, x, y, texture, id, name, frame)
+    const sprite = new OtherPlayer(this.scene, x, y, texture, id, name, frame)
 
     this.displayList.add(sprite)
     this.updateList.add(sprite)

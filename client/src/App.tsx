@@ -42,7 +42,7 @@ function App() {
         /* Render Chat or VideoConnectionDialog if no dialogs are opened. */
         <>
           <Chat />
-          <Scoreboard />
+          {/* <Scoreboard /> */}
           {/* Render VideoConnectionDialog if user is not connected to a webcam. */}
           {/* {!videoConnected && <VideoConnectionDialog />} */}
           <MobileVirtualJoystick />

@@ -3,7 +3,6 @@
 import { enableMapSet } from 'immer'
 import { configureStore } from '@reduxjs/toolkit'
 import userReducer from './UserStore'
-import playerReducer from './PlayerStore';
 import computerReducer from './ComputerStore'
 import whiteboardReducer from './WhiteboardStore'
 import chatReducer from './ChatStore'
@@ -14,7 +13,6 @@ enableMapSet()
 const store = configureStore({
   reducer: {
     user: userReducer,
-    players: playerReducer,
     computer: computerReducer,
     whiteboard: whiteboardReducer,
     chat: chatReducer,

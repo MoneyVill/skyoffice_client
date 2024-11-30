@@ -17,28 +17,57 @@ const NavbarWrapper = styled.div`
   padding: 0 2rem;
 `;
 
-const ProfileSection = styled.div`
+const StatsSection = styled.div`
   display: flex;
+  justify-content: evenly;
   align-items: center;
+  width: 65vw;
+  height: 100%;
+  max-width: 70vw;
   gap: 1rem;
 `;
 
-const StatsSection = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 2rem;
-`;
+interface StatBoxProps {
+  bgColor: string;
+  color?: string;
+  $isMoney?: boolean;
+}
 
-const StatBox = styled.div<{ bgColor: string}>`
+const StatBox = styled.div<StatBoxProps>`
   background: ${props => props.bgColor};
-  padding: 0.5rem 1rem;
+  height: 57%;
+  padding: 0 0.5rem;
   border-radius: 1rem;
-  color: white;
+  color: ${props => props.color || 'white'};
   font-weight: bold;
   display: flex;
+  justify-content: center;
   align-items: center;
   gap: 0.5rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  white-space: nowrap; 함
+  min-width: fit-content;
+  flex: 0 1 auto;
+
+
+  @media (min-width: 1024px) {
+    height: 50%;
+    font-size: 1.5rem;
+  }
+
+  .icon {
+    min-width: ${props => props.$isMoney ? '3vh' : '2.5vh'};
+    width: ${props => props.$isMoney ? '2vw' : '1.8vw'};
+    height: 100%;
+    display: flex;
+    align-items: center;
+  }
+
+  img {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+  }
 `;
 
 const Navbar = () => {
@@ -53,7 +82,8 @@ const Navbar = () => {
       const accessToken = localStorage.getItem('accessToken');
       if (!accessToken) return;
 
-      const response = await axios.get(`${import.meta.env.VITE_MODOO_API_URL}/api/users`, {        headers: {
+      const response = await axios.get(`${import.meta.env.VITE_MODOO_API_URL}/api/users`, {
+        headers: {
           Authorization: `Bearer ${accessToken}`
         }
       });
@@ -72,36 +102,36 @@ const Navbar = () => {
 
   useEffect(() => {
     fetchUserInfo();
-    
-    // 4분마다 정보 업데이트
     const interval = setInterval(fetchUserInfo, 4 * 60 * 1000);
-    
     return () => clearInterval(interval);
   }, []);
 
-  // Early return if no user information is available
   if (!userInfo.nickname) return null;
 
   return (
     <NavbarWrapper>
-      <ProfileSection>
-        <StatBox bgColor="#FB6B9F">
+      <StatsSection>
+        <StatBox bgColor="#FB6B9F"> 
           {userInfo.nickname}
         </StatBox>
-      </ProfileSection>
-      
-      <StatsSection>
-        <StatBox bgColor="#FFBF4D">
-          <img src="assets/items/money.png" alt="Money" style={{ width: '24px', height: '24px' }} />
+        
+        <StatBox bgColor="#FFBF4D" $isMoney>
+          <div className="icon">
+            <img src="/client/assets/items/money.png" alt="money" />
+          </div>
           {userInfo.currentMoney.toLocaleString()}원
         </StatBox>
         
-        <StatBox bgColor={userInfo.totalStockReturn >= 0 ? '#ff4a4a' : '#4a89ff'}>
-          <img 
-            src={userInfo.totalStockReturn >= 0 ? 'assets/items/upgold.png' : 'assets/items/downgold.png'} 
-            alt="Return" 
-            style={{ width: '24px', height: '24px' }} 
-          />
+        <StatBox 
+          bgColor="#e9fcff"
+          color={userInfo.totalStockReturn >= 0 ? '#ff4a4a' : '#4a89ff'}
+        >
+          <div className="icon">
+            <img
+              src={`/client/assets/items/${userInfo.totalStockReturn >= 0 ? 'upgold.png' : 'downgold.png'}`}
+              alt="Return"
+            />
+          </div>
           {userInfo.totalStockReturn.toFixed(2)}%
         </StatBox>
       </StatsSection>

@@ -33,7 +33,8 @@ const PlayerStats = styled.span`
 `;
 
 const Scoreboard = () => {
-  const [players, setPlayers] = useState<Array<{ nickname: string; totalMoney: number }>>([]);
+
+  const [players, setPlayers] = useState<Array<{ nickname: string; totalMoney: number; rankPosition: number }>>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -89,9 +90,10 @@ const Scoreboard = () => {
   return (
     <ScoreboardWrapper>
       <h3>Scoreboard</h3>
-      {players.map((player, index) => (
-        <PlayerRow key={index}>
-          <PlayerName>{player.nickname}</PlayerName>
+
+      {players.map((player) => (
+        <PlayerRow key={player.rankPosition}>
+          <PlayerName>{`${player.rankPosition} ${player.nickname}`}</PlayerName>
           <PlayerStats>
             {player.totalMoney} gold
           </PlayerStats>

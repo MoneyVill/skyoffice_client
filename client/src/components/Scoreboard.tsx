@@ -37,11 +37,11 @@ const Scoreboard = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  const moneyvill_url = import.meta.env.VITE_MONEYVILL_URL;
+  // const moneyvill_url = ;
 
   const connectWebSocket = () => {
-    console.log(moneyvill_url)
-    const socket = new WebSocket(moneyvill_url + `/api/ws/db-data`);
+    // console.log(moneyvill_url)
+    const socket = new WebSocket(import.meta.env.VITE_MODOO_API_URL + `/api/ws/db-data`);
 
     socket.onopen = () => {
       console.log('WebSocket 연결 성공');

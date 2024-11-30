@@ -15,11 +15,13 @@ import Scoreboard from './components/Scoreboard'
 import HelperButtonGroup from './components/HelperButtonGroup'
 import MobileVirtualJoystick from './components/MobileVirtualJoystick'
 import {BrowserRouter} from 'react-router-dom'
+import Navbar from './components/Navbar'
 
 const Backdrop = styled.div`
   position: absolute;
   height: 100%;
   width: 100%;
+  padding-top: 10vh;
 `
 
 function App() {
@@ -61,6 +63,7 @@ function App() {
   return (
     <BrowserRouter basename='/client'>
       <Backdrop>
+        {loggedIn && <Navbar />}
         {ui}
         {/* Render HelperButtonGroup if no dialogs are opened. */}
         {!computerDialogOpen && !whiteboardDialogOpen && <HelperButtonGroup />}

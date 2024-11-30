@@ -28,7 +28,7 @@ export const NonAuthApi = createApi({
   reducerPath: 'NonAuthApi',
   tagTypes: ['NonAuthApi'],
   baseQuery: fetchBaseQuery({
-    baseUrl: 'http://localhost:8080/api/'
+    baseUrl: import.meta.env.VITE_MODOO_API_URL+'/api/'
   }),
   endpoints: (builder) => ({
     // 1. 아이디 중복체크

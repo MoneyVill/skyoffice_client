@@ -19,7 +19,7 @@ export const submitQuizAnswer = async (
 ): Promise<ReturnSubmitQuizType> => {
   try {
     const response = await axios.post(
-      'http://localhost:8080/api/quiz/submit',
+      import.meta.env.VITE_MODOO_API_URL+'/api/quiz/submit',
       { isCorrect, prizeMoney }, // DTO 구조에 맞춘 요청 바디
       {
         headers: {

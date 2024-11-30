@@ -10,7 +10,7 @@ const ScoreboardWrapper = styled.div`
   color: white;
   padding: 10px;
   border-radius: 8px;
-  z-index: 1000;
+  z-index: 10;
 `;
 
 const PlayerRow = styled.div`
@@ -33,15 +33,15 @@ const PlayerStats = styled.span`
 `;
 
 const Scoreboard = () => {
-  const [players, setPlayers] = useState<Array<{ name: string; creditRating: number; amount: number }>>([]);
+  const [players, setPlayers] = useState<Array<{ nickname: string; totalMoney: number }>>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   const moneyvill_url = import.meta.env.VITE_MONEYVILL_URL;
-  const nationId = 1; // 전달할 nationId
 
   const connectWebSocket = () => {
-    const socket = new WebSocket(moneyvill_url + `/ws/db-data?nationId=${nationId}`);
+    console.log(moneyvill_url)
+    const socket = new WebSocket(moneyvill_url + `/api/ws/db-data`);
 
     socket.onopen = () => {
       console.log('WebSocket 연결 성공');
@@ -91,9 +91,9 @@ const Scoreboard = () => {
       <h3>Scoreboard</h3>
       {players.map((player, index) => (
         <PlayerRow key={index}>
-          <PlayerName>{player.name}</PlayerName>
+          <PlayerName>{player.nickname}</PlayerName>
           <PlayerStats>
-            {player.creditRating} pts | {player.amount} gold
+            {player.totalMoney} gold
           </PlayerStats>
         </PlayerRow>
       ))}

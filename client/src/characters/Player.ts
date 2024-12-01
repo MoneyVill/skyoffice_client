@@ -75,10 +75,6 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     if (!this.progressBarVisible) {
       return
     }
-    if (this.y < 700){
-      this.progressBar.clear()
-      return
-    }
     const barWidth = 50;
     const barHeight = 8;
     const xOffset = -barWidth / 2;
@@ -134,7 +130,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
   }
 
   protected onProgressZero() {
-    this.hideProgressBar();
+    // this.hideProgressBar();
     // phaserEvents.emit('quizProgressZero');
   }
 

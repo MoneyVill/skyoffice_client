@@ -31,7 +31,7 @@ import { setFocused, setShowChat } from '../stores/ChatStore'
 import { NavKeys, Keyboard } from '../../../types/KeyboardState'
 
 // Import the Quiz class with the correct path
-import Quiz from '../stores/Quiz'
+import Quiz from '../quiz/Quiz'
 import { QuestionAnswer } from '@mui/icons-material'
 
 export default class Game extends Phaser.Scene {
@@ -50,7 +50,7 @@ export default class Game extends Phaser.Scene {
   public answerCorrectGroup!: Phaser.Physics.Arcade.StaticGroup;
   public answerIncorrectGroup!: Phaser.Physics.Arcade.StaticGroup;
   private isPlayerWaitingForQuiz: boolean = false;
-
+  
   // Quiz instance
   private quiz!: Quiz
 
@@ -231,8 +231,8 @@ export default class Game extends Phaser.Scene {
     // 퀴즈 관련 이벤트 리스너 등록
     this.network.onPlayerJoinQuiz(this.handlePlayerJoinQuiz, this)
     this.network.onWaitForNextQuiz(this.handlePlayerWaitQuiz, this)
+    this.network.onWaitForNextQuiz(this.handleWaitForNextQuiz, this)  // 제거 필요
     this.network.onQuizStarted(this.handleStartQuiz, this)
-    this.network.onWaitForNextQuiz(this.handleWaitForNextQuiz, this)
     this.network.onQuizEnded(this.handleEndQuiz, this)
     this.network.onLeftQuiz(this.handleLeftQuiz, this)
     this.network.onPlayerLeftQuiz(this.handlePlayerLeftQuiz, this)
@@ -252,14 +252,14 @@ export default class Game extends Phaser.Scene {
       if (this.isPlayerWaitingForQuiz) {
         this.network.requestQuizData()
       }
-    }, data.timeUntilNextQuiz * 1000 + 500);
+    }, data.timeUntilNextQuiz * 1000 + 100);
   }
 
-  private handleStartQuiz(data: { curQuiz:number, quizTime: number }) {    
+  private handleStartQuiz(data: { curQuiz: number, quizTime: number }) {    
     // 퀴즈 시작
     if (this.myPlayer.isParticipatingInQuiz) {
       this.quiz.setQuiz(data.curQuiz)
-      this.quiz.showQuiz()
+      this.quiz.startQuiz(688, 1040);
       this.myPlayer.showProgressBar(data.quizTime);
     }
     // 플레이어 진행 바 표시 및 감소 시작
@@ -270,14 +270,14 @@ export default class Game extends Phaser.Scene {
   }
 
   private handleEndQuiz() {
-    this.quiz.hideQuiz(this.myPlayer.getAnswer())
+    this.quiz.endQuiz(this.myPlayer.getAnswer())
     this.myPlayer.hideProgressBar();
   }
 
   private handleLeftQuiz() {
     this.isPlayerWaitingForQuiz = false; 
     this.myPlayer.leaveQuiz();
-    // this.quiz.hideQuiz()
+    this.quiz.endQuiz(undefined)
     this.myPlayer.hideProgressBar();
   }
 
@@ -299,10 +299,10 @@ export default class Game extends Phaser.Scene {
       if (currentItem === selectionItem || currentItem.depth >= selectionItem.depth) {
         return
       }
-      if (this.myPlayer.playerBehavior !== PlayerBehavior.SITTING) {
+      if (this.myPlayer.playerBehavior !== (PlayerBehavior.SITTING)) {
         currentItem.clearDialogBox()
+      }
     }
-  }
     playerSelector.selectedItem = selectionItem;
     selectionItem.onOverlapDialog();
 

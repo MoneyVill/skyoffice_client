@@ -48,15 +48,13 @@ export default class MyPlayer extends Player {
   }
 
   protected onProgressZero() {
-    // 진행 바가 완료되었을 때 호출됩니다.
-    // 플레이어의 X 좌표를 확인하여 답변 결정
+    this.getAnswer()
+  }
+
+  public getAnswer() {
+    let answer: true | false | undefined;
     const playerX = this.x;
     const playerY = this.y;
-    let answer: true | false | undefined;
-  
-    if (playerY < 700) {
-      this.leaveQuiz()
-    }
 
     if (playerX <= 670 && playerY >= 700) {
       answer = true;
@@ -67,9 +65,6 @@ export default class MyPlayer extends Player {
       answer = undefined;
     }
     this.isAnswerCorrect = answer;
-  }
-
-  public getAnswer() {
     return this.isAnswerCorrect
   }
 
@@ -174,22 +169,6 @@ export default class MyPlayer extends Player {
             callback: () => {
               // 플레이어의 속도 초기화
               this.setVelocity(0, 0);
-
-              // 위치 및 깊이 설정 (필요 시 위치 조정 코드를 수정)
-              if (vendingMachineItem.itemDirection) {
-                this.setPosition(
-                  vendingMachineItem.x + sittingShiftData[vendingMachineItem.itemDirection][0],
-                  vendingMachineItem.y + sittingShiftData[vendingMachineItem.itemDirection][1]
-                ).setDepth(
-                  vendingMachineItem.depth + sittingShiftData[vendingMachineItem.itemDirection][2]
-                );
-
-                this.playerContainer.setPosition(
-                  vendingMachineItem.x + sittingShiftData[vendingMachineItem.itemDirection][0],
-                  vendingMachineItem.y + sittingShiftData[vendingMachineItem.itemDirection][1] - 30
-                );
-              }
-
               vendingMachineItem.itemDirection = 'down'; // 방향 설정
               this.play(`${this.playerTexture}_work_${vendingMachineItem.itemDirection}`, true);
               playerSelector.selectedItem = undefined;
@@ -317,7 +296,7 @@ export default class MyPlayer extends Player {
           parts[1] = 'idle';
           this.play(parts.join('_'), true);
           this.playerBehavior = PlayerBehavior.IDLE;
-          this.chairOnSit?.clearDialogBox();
+          // this.chairOnSit?.clearDialogBox();
 
           this.hideProgressBar();
           playerSelector.setPosition(this.x, this.y);

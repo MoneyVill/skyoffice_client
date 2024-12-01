@@ -12,11 +12,7 @@ export default class VendingMachine extends Item {
   onOverlapDialog() {
     const machineId = this.getData('id');
     if (machineId === 'vending_machine_0') {
-      this.setDialogBox('Press Q to solve Quiz 1 :)');
-    } else if (machineId === 'vending_machine_1') {
-      this.setDialogBox('Press Q to solve Quiz 2 :)');
-    } else if (machineId === 'vending_machine_2') {
-      this.setDialogBox('Press Q to solve Quiz 3 :)');
+      this.setDialogBox('Press Q to solve Quiz :)');
     }
   }
 }

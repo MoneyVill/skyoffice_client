@@ -75,6 +75,10 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     if (!this.progressBarVisible) {
       return
     }
+    if (this.y < 700){
+      this.progressBar.clear()
+      return
+    }
     const barWidth = 50;
     const barHeight = 8;
     const xOffset = -barWidth / 2;
@@ -112,10 +116,11 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     }
   }
 
-  showProgressBar() {
+  showProgressBar(duration: number) {
     this.progressBarVisible = true
     this.progressBar.setVisible(true)
     this.progressValue = 100
+    this.decreaseProgressOverTime(duration)
     this.updateProgressBar()
   }
 
@@ -129,7 +134,8 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
   }
 
   protected onProgressZero() {
-    // 기본 동작: 아무것도 하지 않음
+    this.hideProgressBar();
+    // phaserEvents.emit('quizProgressZero');
   }
 
   decreaseProgressOverTime(duration: number) {

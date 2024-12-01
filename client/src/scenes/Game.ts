@@ -9,6 +9,8 @@ import Chair from '../items/Chair'
 import Computer from '../items/Computer'
 import Whiteboard from '../items/Whiteboard'
 import VendingMachine from '../items/VendingMachine'
+import AnswerCorrect from '../items/AnswerCorrect';
+import AnswerIncorrect from '../items/AnswerIncorrect';
 
 // Import custom player classes
 import '../characters/MyPlayer'
@@ -30,15 +32,14 @@ import { NavKeys, Keyboard } from '../../../types/KeyboardState'
 
 // Import the Quiz class with the correct path
 import Quiz from '../stores/Quiz'
+import { QuestionAnswer } from '@mui/icons-material'
 
 export default class Game extends Phaser.Scene {
   network!: Network
   private cursors!: NavKeys
   private keyE!: Phaser.Input.Keyboard.Key
   private keyR!: Phaser.Input.Keyboard.Key
-  private keyX!: Phaser.Input.Keyboard.Key
   private keyQ!: Phaser.Input.Keyboard.Key
-  private keyO!: Phaser.Input.Keyboard.Key
   private map!: Phaser.Tilemaps.Tilemap
   myPlayer!: MyPlayer
   private playerSelector!: Phaser.GameObjects.Zone
@@ -46,6 +47,9 @@ export default class Game extends Phaser.Scene {
   private otherPlayerMap = new Map<string, OtherPlayer>()
   computerMap = new Map<string, Computer>()
   private whiteboardMap = new Map<string, Whiteboard>()
+  public answerCorrectGroup!: Phaser.Physics.Arcade.StaticGroup;
+  public answerIncorrectGroup!: Phaser.Physics.Arcade.StaticGroup;
+  private isPlayerWaitingForQuiz: boolean = false;
 
   // Quiz instance
   private quiz!: Quiz
@@ -64,9 +68,7 @@ export default class Game extends Phaser.Scene {
     // Register action keys
     this.keyE = this.input.keyboard.addKey('E')
     this.keyR = this.input.keyboard.addKey('R')
-    this.keyX = this.input.keyboard.addKey('X')
     this.keyQ = this.input.keyboard.addKey('Q')
-    this.keyO = this.input.keyboard.addKey('O')
 
     // Disable global key capture for chat input
     this.input.keyboard.disableGlobalCapture()
@@ -110,20 +112,37 @@ export default class Game extends Phaser.Scene {
     groundLayer.setCollisionByProperty({ collides: true })
     groundLayer2.setCollisionByProperty({ collides: true })
 
-    this.myPlayer = this.add.myPlayer(705, 500, 'adam', this.network.mySessionId)
+    this.answerCorrectGroup = this.physics.add.staticGroup({ classType: AnswerCorrect });
+    const answerCorrectLayer = this.map.getObjectLayer('AnswerCorrect');
+    answerCorrectLayer.objects.forEach((obj) => {
+      const item = this.addObjectFromTiled(
+        this.answerCorrectGroup,
+        obj,
+        'answercircle',
+        'glowanswercorrect'
+      ) as AnswerCorrect;
+      item.setVisible(false);
+    });
+    this.answerIncorrectGroup = this.physics.add.staticGroup({ classType: AnswerIncorrect });
+    const answerIncorrectLayer = this.map.getObjectLayer('AnswerIncorrect');
+    answerIncorrectLayer.objects.forEach((obj) => {
+      const item = this.addObjectFromTiled(
+       this.answerIncorrectGroup,
+        obj,
+        'answercross',
+        'glowanswerincorrect'
+      ) as AnswerIncorrect;
+      item.setVisible(false);
+    });
+
+    this.myPlayer = this.add.myPlayer(705, 500, 'adam', this.network.mySessionId);
     this.playerSelector = new PlayerSelector(this, 0, 0, 16, 16)
 
     // Register keys
     this.registerKeys()
 
     // Initialize the quiz instance
-    this.quiz = new Quiz(this)
-    this.events.on('startQuiz', (quizType: string) => {
-      this.quiz.showQuiz(quizType); // Pass the quiz type to the Quiz class
-    });
-    this.events.on('stopQuiz', () => {
-      this.quiz.hideQuiz();
-    });
+    this.quiz = new Quiz(this, this.network, this.answerCorrectGroup, this.answerIncorrectGroup)
     // Import chairs from the tilemap
     const chairs = this.physics.add.staticGroup({ classType: Chair })
     const chairLayer = this.map.getObjectLayer('Chair')
@@ -170,7 +189,6 @@ export default class Game extends Phaser.Scene {
       ) as VendingMachine;
       vendingMachine.setData('id', `vending_machine_${i}`); // Assign unique IDs
     });
-    
 
     // Import other objects from the tilemap
     this.addGroupFromTiled('Wall', 'tiles_wall', 'FloorAndGround', false)
@@ -179,7 +197,8 @@ export default class Game extends Phaser.Scene {
     this.addGroupFromTiled('ObjectsOnCollide', 'office', 'Modern_Office_Black_Shadow', true)
     this.addGroupFromTiled('GenericObjects', 'generic', 'Generic', false)
     this.addGroupFromTiled('GenericObjectsOnCollide', 'generic', 'Generic', true)
-    this.addGroupFromTiled('Basement', 'basement', 'Basement', true)
+    this.addGroupFromTiled('AnswerObject', 'cross', 'answerincorrect', false)
+    this.addGroupFromTiled('AnswerObject', 'circle', 'answercorrect', false)
 
     // Group for other players
     this.otherPlayers = this.physics.add.group({ classType: OtherPlayer })
@@ -209,6 +228,68 @@ export default class Game extends Phaser.Scene {
     this.network.onItemUserAdded(this.handleItemUserAdded, this)
     this.network.onItemUserRemoved(this.handleItemUserRemoved, this)
     this.network.onChatMessageAdded(this.handleChatMessageAdded, this)
+    // 퀴즈 관련 이벤트 리스너 등록
+    this.network.onPlayerJoinQuiz(this.handlePlayerJoinQuiz, this)
+    this.network.onWaitForNextQuiz(this.handlePlayerWaitQuiz, this)
+    this.network.onQuizStarted(this.handleStartQuiz, this)
+    this.network.onWaitForNextQuiz(this.handleWaitForNextQuiz, this)
+    this.network.onQuizEnded(this.handleEndQuiz, this)
+    this.network.onLeftQuiz(this.handleLeftQuiz, this)
+    this.network.onPlayerLeftQuiz(this.handlePlayerLeftQuiz, this)
+  }
+
+  private handlePlayerJoinQuiz(data: { remainingTime: number }) {
+    // console.log("PlayerJoined")
+    // console.log("remainingTime: ", data.remainingTime)
+    this.myPlayer.joinQuiz();
+  }
+
+  private handlePlayerWaitQuiz(data: { timeUntilNextQuiz: number }) {
+    // console.log("PlayerJoined")
+    // console.log("remainingTime: ", data.timeUntilNextQuiz)
+    this.isPlayerWaitingForQuiz = true;
+    setTimeout(() => {
+      if (this.isPlayerWaitingForQuiz) {
+        this.network.requestQuizData()
+      }
+    }, data.timeUntilNextQuiz * 1000 + 500);
+  }
+
+  private handleStartQuiz(data: { curQuiz:number, quizTime: number }) {    
+    // 퀴즈 시작
+    if (this.myPlayer.isParticipatingInQuiz) {
+      this.quiz.setQuiz(data.curQuiz)
+      this.quiz.showQuiz()
+      this.myPlayer.showProgressBar(data.quizTime);
+    }
+    // 플레이어 진행 바 표시 및 감소 시작
+  }
+
+  private handleWaitForNextQuiz(data: { timeUntilNextQuiz: number }) {
+    this.showWaitingMessage(data.timeUntilNextQuiz)
+  }
+
+  private handleEndQuiz() {
+    this.quiz.hideQuiz(this.myPlayer.getAnswer())
+    this.myPlayer.hideProgressBar();
+  }
+
+  private handleLeftQuiz() {
+    this.isPlayerWaitingForQuiz = false; 
+    this.myPlayer.leaveQuiz();
+    // this.quiz.hideQuiz()
+    this.myPlayer.hideProgressBar();
+  }
+
+  private handlePlayerLeftQuiz(clientId: string) {
+    // 해당 사용자가 퀴즈에서 나갔음을 UI 등에 반영
+  }
+
+  private showWaitingMessage(timeUntilNextQuiz: number) {
+    // 사용자에게 다음 퀴즈까지 남은 시간을 알려주는 UI 로직 구현
+    const message = `다음 퀴즈까지 ${timeUntilNextQuiz}초 남았습니다.`
+    // 예를 들어, Phaser의 텍스트 객체를 사용하여 화면에 표시
+    console.log(message) // 실제 구현에서는 화면에 표시하도록 수정하세요.
   }
 
   private handleItemSelectorOverlap(playerSelector, selectionItem) {
@@ -323,7 +404,6 @@ export default class Game extends Phaser.Scene {
   update(t: number, dt: number) {
     // Update the quiz if it's active
     if (this.quiz.isQuizActive()) {
-      this.quiz.update(this.keyO, this.keyX)
       // Note: Player can still move during the quiz
     }
 

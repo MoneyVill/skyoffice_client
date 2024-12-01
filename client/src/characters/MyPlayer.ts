@@ -22,6 +22,8 @@ import { openURL } from '../utils/helpers'
 export default class MyPlayer extends Player {
   private playContainerBody: Phaser.Physics.Arcade.Body;
   private chairOnSit?: Chair | VendingMachine;
+  private isAnswerCorrect?: boolean;
+  public isParticipatingInQuiz: boolean;
   public joystickMovement?: JoystickMovement;
 
   constructor(
@@ -34,9 +36,41 @@ export default class MyPlayer extends Player {
   ) {
     super(scene, x, y, texture, id, frame)
     this.playContainerBody = this.playerContainer.body as Phaser.Physics.Arcade.Body
+    this.isParticipatingInQuiz = false
+  }
+
+  joinQuiz() {
+    this.isParticipatingInQuiz = true;
+  }
+
+  leaveQuiz() {
+    this.isParticipatingInQuiz = false;
   }
 
   protected onProgressZero() {
+    // 진행 바가 완료되었을 때 호출됩니다.
+    // 플레이어의 X 좌표를 확인하여 답변 결정
+    const playerX = this.x;
+    const playerY = this.y;
+    let answer: true | false | undefined;
+  
+    if (playerY < 700) {
+      this.leaveQuiz()
+    }
+
+    if (playerX <= 670 && playerY >= 700) {
+      answer = true;
+    } else if (playerX >= 720 && playerY >= 700) {
+      answer = false;
+    } else {
+      // 플레이어가 답변 영역에 있지 않을 때 처리
+      answer = undefined;
+    }
+    this.isAnswerCorrect = answer;
+  }
+
+  public getAnswer() {
+    return this.isAnswerCorrect
   }
 
   setPlayerName(name: string) {
@@ -80,7 +114,6 @@ export default class MyPlayer extends Player {
         case ItemType.VENDINGMACHINE:
           // hacky and hard-coded, but leaving it as is for now
           const vendingmachine = item as VendingMachine
-
           break
       }
     }
@@ -132,30 +165,17 @@ export default class MyPlayer extends Player {
         if (Phaser.Input.Keyboard.JustDown(keyQ) && item?.itemType === ItemType.VENDINGMACHINE) {
           const vendingMachineItem = item as VendingMachine;
 
-          const vendingMachineId = vendingMachineItem.getData('id'); // Get the vending machine ID
+          network.requestQuizData();
 
-          // Emit the startQuiz event with the appropriate quiz type
-          switch (vendingMachineId) {
-            case 'vending_machine_0':
-              this.scene.events.emit('startQuiz', 'quiz_0'); // Trigger quiz 0
-              break;
-            case 'vending_machine_1':
-              this.scene.events.emit('startQuiz', 'quiz_1'); // Trigger quiz 1
-              break;
-            case 'vending_machine_2':
-              this.scene.events.emit('startQuiz', 'quiz_2'); // Trigger quiz 2
-              break;
-            default:
-              console.error('Unknown vending machine ID:', vendingMachineId);
-          }
-          // Set up player behavior as 'WORKING' during the quiz (optional, if needed)
+          // 플레이어 행동 상태를 WORKING으로 설정
           this.playerBehavior = PlayerBehavior.WORKING;
-
           this.scene.time.addEvent({
             delay: 10,
             callback: () => {
-              // Update character velocity and position
+              // 플레이어의 속도 초기화
               this.setVelocity(0, 0);
+
+              // 위치 및 깊이 설정 (필요 시 위치 조정 코드를 수정)
               if (vendingMachineItem.itemDirection) {
                 this.setPosition(
                   vendingMachineItem.x + sittingShiftData[vendingMachineItem.itemDirection][0],
@@ -163,38 +183,25 @@ export default class MyPlayer extends Player {
                 ).setDepth(
                   vendingMachineItem.depth + sittingShiftData[vendingMachineItem.itemDirection][2]
                 );
-                // Also update playerNameContainer velocity and position
-                this.playContainerBody.setVelocity(0, 0);
+
                 this.playerContainer.setPosition(
                   vendingMachineItem.x + sittingShiftData[vendingMachineItem.itemDirection][0],
                   vendingMachineItem.y + sittingShiftData[vendingMachineItem.itemDirection][1] - 30
                 );
               }
-              vendingMachineItem.itemDirection = 'down'; // Set direction to 'down'
+
+              vendingMachineItem.itemDirection = 'down'; // 방향 설정
               this.play(`${this.playerTexture}_work_${vendingMachineItem.itemDirection}`, true);
               playerSelector.selectedItem = undefined;
-              if (vendingMachineItem.itemDirection === 'up') {
-                playerSelector.setPosition(this.x, this.y - this.height);
-              } else {
-                playerSelector.setPosition(0, 0);
-              }
-              // Send new location and anim to server
+
+              // 플레이어 위치 및 애니메이션 업데이트를 서버에 전송
               network.updatePlayer(this.x, this.y, this.anims.currentAnim.key);
             },
             loop: false,
           });
-          // Set up new dialog as player starts working
           vendingMachineItem.clearDialogBox();
-          // vendingMachineItem.setDialogBox('Press Q to leave');
-
-
-          this.chairOnSit = vendingMachineItem;
-          this.playerBehavior = PlayerBehavior.WORKING;
-
-          // Show progress bar or any other UI elements if necessary
-          this.showProgressBar();
-          this.decreaseProgressOverTime(5000);
           return;
+          // Set up new dialog as player starts working
         }
 
         // Handle player movement
@@ -270,9 +277,42 @@ export default class MyPlayer extends Player {
         break;
 
       case PlayerBehavior.WORKING:
+        const speed2 = 400;
+        let vx2 = 0;
+        let vy2 = 0;
+      
+        if (this.joystickMovement?.isMoving) {
+          joystickLeft = this.joystickMovement.direction.left;
+          joystickRight = this.joystickMovement.direction.right;
+          joystickUp = this.joystickMovement.direction.up;
+          joystickDown = this.joystickMovement.direction.down;
+        }
+      
+        if (cursors.left?.isDown || cursors.A?.isDown) vx2 -= speed2;
+        if (cursors.right?.isDown || cursors.D?.isDown) vx2 += speed2;
+        if (cursors.up?.isDown || cursors.W?.isDown) {
+          vy2 -= speed2;
+          this.setDepth(this.y); // y 좌표 변경 시 깊이 변경
+        }
+        if (cursors.down?.isDown || cursors.S?.isDown) {
+          vy2 += speed2;
+          this.setDepth(this.y); // y 좌표 변경 시 깊이 변경
+        }
+      
+        // 캐릭터 속도 업데이트
+        this.setVelocity(vx2, vy2);
+        this.body.velocity.setLength(speed2);
+        // playerNameContainer 속도 업데이트
+        this.playContainerBody.setVelocity(vx2, vy2);
+        this.playContainerBody.velocity.setLength(speed2);
+      
+        // 애니메이션 업데이트 및 서버에 전송
+        if (vx2 !== 0 || vy2 !== 0) network.updatePlayer(this.x, this.y, this.anims.currentAnim.key);
+      
         // Return to idle if player presses Q while working
         if (Phaser.Input.Keyboard.JustDown(keyQ)) {
-          this.scene.events.emit('stopQuiz');
+          // this.scene.events.emit('stopQuiz');
+          network.leaveQuiz();
           const parts = this.anims.currentAnim.key.split('_');
           parts[1] = 'idle';
           this.play(parts.join('_'), true);

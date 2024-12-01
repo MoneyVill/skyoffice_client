@@ -60,6 +60,22 @@ export default class Bootstrap extends Phaser.Scene {
       frameWidth: 48,
       frameHeight: 72,
     })
+    this.load.spritesheet('cross', 'assets/items/cross.png', {
+      frameWidth: 32,
+      frameHeight: 32,
+    })
+    this.load.spritesheet('circle', 'assets/items/circle.png', {
+      frameWidth: 32,
+      frameHeight: 32,
+    })
+    this.load.spritesheet('answercross', 'assets/items/glowcross.png', {
+      frameWidth: 32,
+      frameHeight: 32,
+    })
+    this.load.spritesheet('answercircle', 'assets/items/glowcircle.png', {
+      frameWidth: 32,
+      frameHeight: 32,
+    })
     this.load.spritesheet('office', 'assets/tileset/Modern_Office_Black_Shadow.png', {
       frameWidth: 32,
       frameHeight: 32,

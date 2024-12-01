@@ -107,6 +107,16 @@ export default class Network {
     this.initialize()
   }
 
+  // 퀴즈 요청을 서버로 보내는 메서드 추가
+  requestQuizData() {
+    this.room?.send(Message.REQUEST_QUIZ)
+  }
+  
+  // 퀴즈 나가기 요청을 서버로 보내는 메서드 추가
+  leaveQuiz() {
+    this.room?.send(Message.LEAVE_QUIZ)
+  }
+
   // set up all network listeners before the game starts
   initialize() {
     if (!this.room) return
@@ -242,6 +252,37 @@ export default class Network {
     //   const computerState = store.getState().computer
     //   computerState.shareScreenManager?.onUserLeft(clientId)
     // })
+
+    // 퀴즈 핸들러 초기화
+    // 서버로부터 현재 퀴즈에 참여할 수 있다는 응답을 받았을 때
+    this.room.onMessage(Message.PLAYER_JOIN_QUIZ, (data: { questionNumber: number; remainingTime: number }) => {
+      phaserEvents.emit(Event.PLAYER_JOIN_QUIZ, data)
+    })
+
+    // 서버로부터 다음 퀴즈를 기다리라는 응답을 받았을 때
+    this.room.onMessage(Message.WAIT_FOR_NEXT_QUIZ, (data: { timeUntilNextQuiz: number }) => {
+      phaserEvents.emit(Event.WAIT_FOR_NEXT_QUIZ, data)
+    })
+
+    // 서버로부터 퀴즈 시작 브로드캐스트를 받았을 때
+    this.room.onMessage(Message.START_QUIZ, (data: { quizTime: number} ) => {
+      phaserEvents.emit(Event.START_QUIZ, data)
+    })
+
+    // 서버로부터 퀴즈 종료 브로드캐스트를 받았을 때
+    this.room.onMessage(Message.END_QUIZ, () => {
+      phaserEvents.emit(Event.END_QUIZ)
+    })
+
+    // 서버로부터 퀴즈 나가기 확인 메시지를 받았을 때
+    this.room.onMessage(Message.LEFT_QUIZ, () => {
+      phaserEvents.emit(Event.LEFT_QUIZ)
+    })
+
+    // 다른 사용자가 퀴즈에서 나갔을 때
+    this.room.onMessage(Message.PLAYER_LEFT_QUIZ, (data: { clientId: string }) => {
+      phaserEvents.emit(Event.PLAYER_LEFT_QUIZ, data.clientId);
+    });
   }
 
   // method to register event listener and call back function when a item user added
@@ -291,6 +332,31 @@ export default class Network {
     context?: any
   ) {
     phaserEvents.on(Event.PLAYER_UPDATED, callback, context)
+  }
+
+  // 퀴즈 관련 이벤트 리스너 등록 메서드 추가
+  onPlayerJoinQuiz(callback: (data: { remainingTime: number }) => void, context?: any) {
+    phaserEvents.on(Event.PLAYER_JOIN_QUIZ, callback, context)
+  }
+  
+  onWaitForNextQuiz(callback: (data: { timeUntilNextQuiz: number }) => void, context?: any) {
+    phaserEvents.on(Event.WAIT_FOR_NEXT_QUIZ, callback, context)
+  }
+
+  onQuizStarted(callback: (data: { curQuiz: number; quizTime: number }) => void, context?: any) {
+    phaserEvents.on(Event.START_QUIZ, callback, context)
+  }
+
+  onQuizEnded(callback: () => void, context?: any) {
+    phaserEvents.on(Event.END_QUIZ, callback, context)
+  }
+
+  onLeftQuiz(callback: () => void, context?: any) {
+    phaserEvents.on(Event.LEFT_QUIZ, callback, context)
+  }
+
+  onPlayerLeftQuiz(callback: (clientId: string) => void, context?: any) {
+    phaserEvents.on(Event.PLAYER_LEFT_QUIZ, callback, context)
   }
 
   // method to send player updates to Colyseus server

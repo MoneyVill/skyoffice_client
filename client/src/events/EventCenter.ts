@@ -14,4 +14,10 @@ export enum Event {
   ITEM_USER_ADDED = 'item-user-added',
   ITEM_USER_REMOVED = 'item-user-removed',
   UPDATE_DIALOG_BUBBLE = 'update-dialog-bubble',
+  START_QUIZ = 'startQuiz',
+  PLAYER_JOIN_QUIZ = 'playerjoinQuiz',
+  WAIT_FOR_NEXT_QUIZ = 'waitForNextQuiz',
+  END_QUIZ = 'endQuiz',
+  LEFT_QUIZ = 'leftQuiz',
+  PLAYER_LEFT_QUIZ = 'playerleftQuiz',
 }

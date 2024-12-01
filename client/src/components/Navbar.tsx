@@ -70,12 +70,61 @@ const StatBox = styled.div<StatBoxProps>`
   }
 `;
 
+const BgmButton = styled.div`
+  position: fixed;
+  right: 4px;
+  bottom: 4px;
+  min-width: 9vh;
+  width: 4vw;
+  cursor: pointer;
+  transition: transform 0.2s;
+
+  &:hover {
+    transform: scale(1.05);
+  }
+
+  @media (min-width: 1024px) {
+    right: 1.5rem;
+    bottom: 1.5rem;
+  }
+
+  img {
+    width: 100%;
+  }
+`;
+
 const Navbar = () => {
   const [userInfo, setUserInfo] = useState({
     nickname: localStorage.getItem('nickname') || '',
     currentMoney: 0,
     totalStockReturn: 0
   });
+
+  const [bgmStatus, setBgmStatus] = useState(false);
+  const [audio] = useState(new Audio('/client/assets/audio/bgm.mp3'));
+
+  useEffect(() => {
+    audio.loop = true; // 반복 재생 설정
+  }, [audio]);
+
+  const handleClick = (e: React.MouseEvent) => {
+    const target = e.currentTarget as HTMLElement;
+    if (target.ariaLabel === '브금') {
+      if (bgmStatus) {
+        audio.pause();
+      } else {
+        audio.play();
+      }
+      setBgmStatus(!bgmStatus);
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      audio.pause();
+      audio.currentTime = 0;
+    };
+  }, [audio]);
 
   const fetchUserInfo = async () => {
     try {
@@ -109,33 +158,45 @@ const Navbar = () => {
   if (!userInfo.nickname) return null;
 
   return (
-    <NavbarWrapper>
-      <StatsSection>
-        <StatBox bgColor="#FB6B9F"> 
-          {userInfo.nickname}
-        </StatBox>
-        
-        <StatBox bgColor="#FFBF4D" $isMoney>
-          <div className="icon">
-            <img src="/client/assets/items/money.png" alt="money" />
-          </div>
-          {userInfo.currentMoney.toLocaleString()}원
-        </StatBox>
-        
-        <StatBox 
-          bgColor="#e9fcff"
-          color={userInfo.totalStockReturn >= 0 ? '#ff4a4a' : '#4a89ff'}
-        >
-          <div className="icon">
-            <img
-              src={`/client/assets/items/${userInfo.totalStockReturn >= 0 ? 'upgold.png' : 'downgold.png'}`}
-              alt="Return"
-            />
-          </div>
-          {userInfo.totalStockReturn.toFixed(2)}%
-        </StatBox>
-      </StatsSection>
-    </NavbarWrapper>
+    <>
+      <NavbarWrapper>
+        <StatsSection>
+          <StatBox bgColor="#FB6B9F"> 
+            {userInfo.nickname}
+          </StatBox>
+          
+          <StatBox bgColor="#FFBF4D" $isMoney>
+            <div className="icon">
+              <img src="/client/assets/items/money.png" alt="money" />
+            </div>
+            {userInfo.currentMoney.toLocaleString()}원
+          </StatBox>
+          
+          <StatBox 
+            bgColor="#e9fcff"
+            color={userInfo.totalStockReturn >= 0 ? '#ff4a4a' : '#4a89ff'}
+          >
+            <div className="icon">
+              <img
+                src={`/client/assets/items/${userInfo.totalStockReturn >= 0 ? 'upgold.png' : 'downgold.png'}`}
+                alt="Return"
+              />
+            </div>
+            {userInfo.totalStockReturn.toFixed(2)}%
+          </StatBox>
+        </StatsSection>
+      </NavbarWrapper>
+
+      <BgmButton
+        aria-label="브금"
+        onClick={handleClick}
+      >
+        <img 
+          src={bgmStatus ? '/client/assets/items/bgm.png' : '/client/assets/items/bgmoff.png'} 
+          alt={bgmStatus ? "BGM ON" : "BGM OFF"}
+        />
+      </BgmButton>
+    </>
   );
 };
 

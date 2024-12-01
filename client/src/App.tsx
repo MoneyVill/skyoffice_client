@@ -35,7 +35,6 @@ function App() {
       /* Render ComputerDialog if user is using a computer. */
       ui = (
         <>
-          <Scoreboard />
           <Navbar />
           <Chat />
           <ComputerDialog />
@@ -45,7 +44,6 @@ function App() {
       /* Render WhiteboardDialog if user is using a whiteboard. */
       ui = (
         <>
-          <Scoreboard />
           <Navbar />
           <Chat />
           <WhiteboardDialog />
@@ -56,7 +54,6 @@ function App() {
         /* Render Chat or VideoConnectionDialog if no dialogs are opened. */
         <>
           <Navbar />
-          <Scoreboard />
           <Chat />
           {/* Render VideoConnectionDialog if user is not connected to a webcam. */}
           {/* {!videoConnected && <VideoConnectionDialog />} */}
@@ -76,6 +73,7 @@ function App() {
   return (
     <BrowserRouter basename='/client'>
       <Backdrop>
+        <Scoreboard />
         {ui}
       </Backdrop>
     </BrowserRouter>

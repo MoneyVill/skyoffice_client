@@ -8,14 +8,12 @@ import { closeWhiteboardDialog } from '../stores/WhiteboardStore'
 
 const Backdrop = styled.div`
   position: fixed;
-  top: 0;
+  top: 10%;
   left: 0;
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
-  padding: 16px 180px 16px 16px;
   width: 100%;
-  height: 100%;
+  height: 90%;
+  overflow: hidden;
+  padding: 16px 350px 16px 16px;
   z-index: 100;
 `
 const Wrapper = styled.div`
@@ -29,7 +27,6 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   min-width: max-content;
-  // max-width: 500px;
   .close {
     position: absolute;
     top: 0px;

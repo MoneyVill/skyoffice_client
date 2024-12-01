@@ -33,16 +33,31 @@ function App() {
   if (loggedIn) {
     if (computerDialogOpen) {
       /* Render ComputerDialog if user is using a computer. */
-      ui = <ComputerDialog />
+      ui = (
+        <>
+          <Scoreboard />
+          <Navbar />
+          <Chat />
+          <ComputerDialog />
+        </>
+      )
     } else if (whiteboardDialogOpen) {
       /* Render WhiteboardDialog if user is using a whiteboard. */
-      ui = <WhiteboardDialog />
+      ui = (
+        <>
+          <Scoreboard />
+          <Navbar />
+          <Chat />
+          <WhiteboardDialog />
+        </>
+      )
     } else {
       ui = (
         /* Render Chat or VideoConnectionDialog if no dialogs are opened. */
         <>
+          <Navbar />
+          <Scoreboard />
           <Chat />
-          {/* <Scoreboard /> */}
           {/* Render VideoConnectionDialog if user is not connected to a webcam. */}
           {/* {!videoConnected && <VideoConnectionDialog />} */}
           <MobileVirtualJoystick />
@@ -61,7 +76,6 @@ function App() {
   return (
     <BrowserRouter basename='/client'>
       <Backdrop>
-        {loggedIn && <Navbar />}
         {ui}
       </Backdrop>
     </BrowserRouter>

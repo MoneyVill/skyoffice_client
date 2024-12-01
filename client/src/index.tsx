@@ -17,8 +17,7 @@ root.render(
   <React.StrictMode>
     <Provider store={store}>
       <ThemeProvider theme={muiTheme}>
-        <><Scoreboard />
-        <App /></>
+        <App />
       </ThemeProvider>
     </Provider>
   </React.StrictMode>

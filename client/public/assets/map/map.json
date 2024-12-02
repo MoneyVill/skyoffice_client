@@ -893,7 +893,6 @@
         {
          "draworder":"topdown",
          "id":23,
-         "locked":true,
          "name":"AnswerIncorrect",
          "objects":[
                 {
@@ -1279,6 +1278,18 @@
                  "width":32,
                  "x":736,
                  "y":896
+                }, 
+                {
+                 "gid":8053,
+                 "height":32,
+                 "id":1714,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":864,
+                 "y":736
                 }],
          "opacity":0.5,
          "type":"objectgroup",
@@ -3617,8 +3628,8 @@
                  "type":"",
                  "visible":true,
                  "width":48,
-                 "x":664.166666666667,
-                 "y":848.833666666667
+                 "x":664.167,
+                 "y":848.834
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -3627,7 +3638,7 @@
          "y":0
         }],
  "nextlayerid":24,
- "nextobjectid":1714,
+ "nextobjectid":1715,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.11.0",

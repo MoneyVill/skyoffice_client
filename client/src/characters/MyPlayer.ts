@@ -89,6 +89,15 @@ export default class MyPlayer extends Player {
     // y 좌표가 700보다 작아질 경우 서버에 퀴즈 나가기 요청을 보냄
     if (this.y < 700 && isPlayerInQuiz) {
       network.leaveQuiz();
+
+      const parts = this.anims.currentAnim.key.split('_');
+      parts[1] = 'idle';
+      this.play(parts.join('_'), true);
+      this.playerBehavior = PlayerBehavior.IDLE;
+
+      playerSelector.setPosition(this.x, this.y);
+      playerSelector.update(this, cursors);
+      network.updatePlayer(this.x, this.y, this.anims.currentAnim.key);
     }
 
     const item = playerSelector.selectedItem
@@ -293,9 +302,7 @@ export default class MyPlayer extends Player {
           parts[1] = 'idle';
           this.play(parts.join('_'), true);
           this.playerBehavior = PlayerBehavior.IDLE;
-          // this.chairOnSit?.clearDialogBox();
 
-          this.hideProgressBar();
           playerSelector.setPosition(this.x, this.y);
           playerSelector.update(this, cursors);
           network.updatePlayer(this.x, this.y, this.anims.currentAnim.key);

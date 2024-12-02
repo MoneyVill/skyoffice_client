@@ -25,6 +25,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
   private timeoutID?: number
   private progressEvent?: Phaser.Time.TimerEvent; // progress 이벤트를 저장
   private progressBar: Phaser.GameObjects.Graphics; // Progress bar 추가
+  private alarmIcon: Phaser.GameObjects.Graphics; // Progress bar 추가
   private progressValue: number = 100; // Progress bar의 초기 값
   private progressBarVisible: boolean = false; // 프로그레스 바 초기 숨김 상태
 
@@ -45,7 +46,9 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     this.anims.play(`${this.playerTexture}_idle_down`, true)
 
     this.progressBar = scene.add.graphics();
+    this.alarmIcon = scene.add.graphics();
     this.progressBar.setVisible(false);
+    this.alarmIcon.setVisible(false);
     this.updateProgressBar();
 
     this.playerContainer = this.scene.add.container(this.x, this.y - 30).setDepth(5000)
@@ -73,12 +76,15 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
 
   private updateProgressBar() {
     if (!this.progressBarVisible) {
-      return
+      return;
     }
     const barWidth = 50;
     const barHeight = 8;
     const xOffset = -barWidth / 2;
     const yOffset = -this.height / 2 - 25;
+  
+    const alarmIconOffsetX = xOffset; // 알람시계는 progressbar 왼쪽에 위치
+    const alarmIconOffsetY = yOffset + 4;
   
     let shakeX = 0;
     let shakeY = 0;
@@ -87,20 +93,49 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
       shakeY = Phaser.Math.Between(-2, 2);
     }
   
+    // Progress bar 업데이트
     this.progressBar.clear();
     this.progressBar.setDepth(10001);
   
     this.progressBar.fillStyle(0x000000, 0.5);
-    this.progressBar.fillRect(this.x + xOffset + shakeX, this.y + yOffset + shakeY, barWidth, barHeight);
+    this.progressBar.fillRect(this.x + xOffset, this.y + yOffset, barWidth, barHeight);
   
     if (this.progressValue <= 50 && this.progressValue > 30) {
-      this.progressBar.fillStyle(0xFFA500, 1);
+      this.progressBar.fillStyle(0xffa500, 1);
     } else if (this.progressValue <= 30) {
       this.progressBar.fillStyle(0xff0000, 1);
     } else {
       this.progressBar.fillStyle(0x00ff00, 1);
     }
-    this.progressBar.fillRect(this.x + xOffset + shakeX, this.y + yOffset + shakeY, (this.progressValue / 100) * barWidth, barHeight);
+    this.progressBar.fillRect(this.x + xOffset, this.y + yOffset, (this.progressValue / 100) * barWidth, barHeight);
+
+    this.alarmIcon.clear();
+    this.alarmIcon.setDepth(10002);
+    this.alarmIcon.fillStyle(0x87ceeb, 1);
+
+    const alarmIconRadius = 5;
+    const alarmCenterX = this.x + alarmIconOffsetX + shakeX;
+    const alarmCenterY = this.y + alarmIconOffsetY + shakeY;
+    this.alarmIcon.fillCircle(alarmCenterX, alarmCenterY, alarmIconRadius);
+
+    this.alarmIcon.fillStyle(0xffffff, 1)
+    this.alarmIcon.fillCircle(alarmCenterX, alarmCenterY, alarmIconRadius * 0.6);
+
+    this.alarmIcon.fillStyle(0x87ceeb, 1);
+    const bellWidth = 3.5;
+    const bellHeight = 2;
+    this.alarmIcon.fillRect(alarmCenterX - bellWidth, alarmCenterY - alarmIconRadius - bellHeight, bellWidth * 2, bellHeight);
+
+    const handLength = alarmIconRadius * 0.8;
+    const handAngle = Phaser.Math.DegToRad((this.progressValue / 100) * 360);
+    const handEndX = alarmCenterX + handLength * Math.cos(handAngle - Math.PI / 2);
+    const handEndY = alarmCenterY + handLength * Math.sin(handAngle - Math.PI / 2);
+
+    this.alarmIcon.lineStyle(1, 0x000000, 1);
+    this.alarmIcon.beginPath();
+    this.alarmIcon.moveTo(alarmCenterX, alarmCenterY);
+    this.alarmIcon.lineTo(handEndX, handEndY);
+    this.alarmIcon.strokePath();
   }
 
   setProgress(value: number) {
@@ -115,6 +150,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
   showProgressBar(duration: number) {
     this.progressBarVisible = true
     this.progressBar.setVisible(true)
+    this.alarmIcon.setVisible(true)
     this.progressValue = 100
     this.decreaseProgressOverTime(duration)
     this.updateProgressBar()
@@ -123,6 +159,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
   hideProgressBar() {
     this.progressBarVisible = false
     this.progressBar.setVisible(false)
+    this.alarmIcon.setVisible(false)
     if (this.progressEvent) {
       this.progressEvent.remove();
       this.progressEvent = undefined;

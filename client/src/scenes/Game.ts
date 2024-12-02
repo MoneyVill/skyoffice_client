@@ -27,12 +27,19 @@ import { ItemType } from '../../../types/Items'
 
 // Import store and events
 import store from '../stores'
-import { setFocused, setShowChat } from '../stores/ChatStore'
+import { pushPlayerLeftMessage, setFocused, setShowChat } from '../stores/ChatStore'
 import { NavKeys, Keyboard } from '../../../types/KeyboardState'
+import { 
+  pushQuizStartedMessage,
+  pushQuizEndedMessage,
+  playerJoinedQuiz,
+  addExistingParticipants,
+  playerWaitingForQuiz,
+  playerLeftQuiz, 
+} from '../stores/QuizStore';
 
 // Import the Quiz class with the correct path
 import Quiz from '../quiz/Quiz'
-import { QuestionAnswer } from '@mui/icons-material'
 
 export default class Game extends Phaser.Scene {
   network!: Network
@@ -49,7 +56,6 @@ export default class Game extends Phaser.Scene {
   private whiteboardMap = new Map<string, Whiteboard>()
   public answerCorrectGroup!: Phaser.Physics.Arcade.StaticGroup;
   public answerIncorrectGroup!: Phaser.Physics.Arcade.StaticGroup;
-  private isPlayerWaitingForQuiz: boolean = false;
   
   // Quiz instance
   private quiz!: Quiz
@@ -206,7 +212,7 @@ export default class Game extends Phaser.Scene {
     this.otherPlayers = this.physics.add.group({ classType: OtherPlayer })
 
     // Set up camera
-    this.cameras.main.zoom = 1.5
+    this.cameras.main.zoom = 1.4
     this.cameras.main.startFollow(this.myPlayer, true)
 
     this.physics.add.collider([this.myPlayer, this.myPlayer.playerContainer], groundLayer)
@@ -232,67 +238,63 @@ export default class Game extends Phaser.Scene {
     this.network.onItemUserRemoved(this.handleItemUserRemoved, this)
     this.network.onChatMessageAdded(this.handleChatMessageAdded, this)
     // 퀴즈 관련 이벤트 리스너 등록
-    this.network.onPlayerJoinQuiz(this.handlePlayerJoinQuiz, this)
     this.network.onWaitForNextQuiz(this.handlePlayerWaitQuiz, this)
-    this.network.onWaitForNextQuiz(this.handleWaitForNextQuiz, this)  // 제거 필요
+    this.network.onPlayerJoinQuiz(this.handlePlayerJoinQuiz, this)
+    this.network.onJoinQuiz(this.handleJoinQuiz, this)
     this.network.onQuizStarted(this.handleStartQuiz, this)
     this.network.onQuizEnded(this.handleEndQuiz, this)
     this.network.onLeftQuiz(this.handleLeftQuiz, this)
     this.network.onPlayerLeftQuiz(this.handlePlayerLeftQuiz, this)
   }
 
-  private handlePlayerJoinQuiz(data: { remainingTime: number }) {
-    // console.log("PlayerJoined")
-    // console.log("remainingTime: ", data.remainingTime)
-    this.myPlayer.joinQuiz();
+  private handlePlayerJoinQuiz(data: { playerName: string; participantsCount: number; existingParticipants: string[] }) {
+    store.dispatch(addExistingParticipants(data.existingParticipants));
+    store.dispatch(playerJoinedQuiz(data.playerName));
+    this.quiz.playerJoinQuiz(data.playerName, data.participantsCount);
+  }
+
+  private handleJoinQuiz(data: { remainingTime: number }) {
+    this.quiz.playerJoinedQuiz(data.remainingTime)
   }
 
   private handlePlayerWaitQuiz(data: { timeUntilNextQuiz: number }) {
-    // console.log("PlayerJoined")
-    // console.log("remainingTime: ", data.timeUntilNextQuiz)
-    this.isPlayerWaitingForQuiz = true;
-    setTimeout(() => {
-      if (this.isPlayerWaitingForQuiz) {
-        this.network.requestQuizData()
-      }
-    }, data.timeUntilNextQuiz * 1000 + 100);
+    this.quiz.playerWaitQuiz(data.timeUntilNextQuiz);
+    store.dispatch(playerWaitingForQuiz(true));
   }
 
-  private handleStartQuiz(data: { curQuiz: number, quizTime: number }) {    
-    // 퀴즈 시작
-    if (this.myPlayer.isParticipatingInQuiz) {
+  private handleStartQuiz(data: { curQuiz: number, quizTime: number }) {
+    store.dispatch(playerWaitingForQuiz(false));
+    store.dispatch(pushQuizStartedMessage());
+
+    const state = store.getState();
+    const isPlayerInQuiz = state.quiz.participants.includes(this.myPlayer.playerName.text);
+    if (isPlayerInQuiz) {
       this.quiz.setQuiz(data.curQuiz)
       this.quiz.startQuiz(688, 1040);
       this.myPlayer.showProgressBar(data.quizTime);
     }
-    // 플레이어 진행 바 표시 및 감소 시작
-  }
-
-  private handleWaitForNextQuiz(data: { timeUntilNextQuiz: number }) {
-    this.showWaitingMessage(data.timeUntilNextQuiz)
   }
 
   private handleEndQuiz() {
+    store.dispatch(pushQuizEndedMessage());
     this.quiz.endQuiz(this.myPlayer.getAnswer())
     this.myPlayer.hideProgressBar();
   }
 
-  private handleLeftQuiz() {
-    this.isPlayerWaitingForQuiz = false; 
-    this.myPlayer.leaveQuiz();
+  private handlePlayerLeftQuiz(data: { playerName: string }) {
+    store.dispatch(playerLeftQuiz(this.myPlayer.playerName.text))
+    store.dispatch(playerWaitingForQuiz(false));
+
+    const state = store.getState();
+    const participantsCount = state.quiz.participants.length
+    const isPlayerJoinQuiz = state.quiz.participants.includes(this.myPlayer.playerName.text);
+    this.quiz.playerLeftQuiz(isPlayerJoinQuiz, data.playerName, participantsCount)
     this.quiz.endQuiz(undefined)
     this.myPlayer.hideProgressBar();
   }
 
-  private handlePlayerLeftQuiz(clientId: string) {
-    // 해당 사용자가 퀴즈에서 나갔음을 UI 등에 반영
-  }
-
-  private showWaitingMessage(timeUntilNextQuiz: number) {
-    // 사용자에게 다음 퀴즈까지 남은 시간을 알려주는 UI 로직 구현
-    const message = `다음 퀴즈까지 ${timeUntilNextQuiz}초 남았습니다.`
-    // 예를 들어, Phaser의 텍스트 객체를 사용하여 화면에 표시
-    console.log(message) // 실제 구현에서는 화면에 표시하도록 수정하세요.
+  private handleLeftQuiz() {
+    this.quiz.playerLeftQuiz2()
   }
 
   private handleItemSelectorOverlap(playerSelector, selectionItem) {
@@ -405,11 +407,11 @@ export default class Game extends Phaser.Scene {
   }
 
   update(t: number, dt: number) {
-    // Update the quiz if it's active
-    if (this.quiz.isQuizActive()) {
-      // Note: Player can still move during the quiz
-    }
+    const state = store.getState();
+    const quizInProgress = state.quiz.quizInProgress;
 
+    // Update the quiz if it's active
+    // if (!quizInProgress && this.myPlayer && this.network) {
     if (this.myPlayer && this.network) {
       this.playerSelector.update(this.myPlayer, this.cursors)
       this.myPlayer.update(

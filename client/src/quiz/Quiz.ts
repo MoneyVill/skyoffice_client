@@ -1,11 +1,12 @@
-// /quiz/Quiz.ts
-
-// Import the function to submit the quiz answer to the server
+import store from '../stores';
+import { pushQuizStartedMessage, pushQuizEndedMessage, playerJoinedQuiz } from '../stores/QuizStore'; // Store actions 가져오기
 import Network from '../services/Network';
 import { submitQuizAnswer } from '../stores/api';
 import AnswerCorrect from '../items/AnswerCorrect';
 import AnswerIncorrect from '../items/AnswerIncorrect';
 import QuizUI from './QuizUI';
+import NotificationUI from '../quiz/NotificationUI';
+import MyPlayer from '../characters/MyPlayer';
 
 // Define the structure for a quiz question
 interface QuizQuestion {
@@ -17,11 +18,11 @@ export default class Quiz {
   private scene: Phaser.Scene;
   private network: Network;
   private quizContainer?: Phaser.GameObjects.Container;
-  private isActive: boolean = false;
   private currentQuestion?: QuizQuestion;
   private answerCorrectGroup: Phaser.Physics.Arcade.StaticGroup;
   private answerIncorrectGroup: Phaser.Physics.Arcade.StaticGroup;
   private quizUI?: QuizUI;
+  private notificationUI: NotificationUI; // 알림 UI를 한 번 생성하여 재사용
 
   constructor(
     scene: Phaser.Scene, 
@@ -33,43 +34,89 @@ export default class Quiz {
     this.network = network;
     this.answerCorrectGroup = answerCorrectGroup;
     this.answerIncorrectGroup = answerIncorrectGroup;
+    this.notificationUI = new NotificationUI(this.scene, 688, 680, '');
+    this.notificationUI.setVisible(false);
+  }
+
+  // 알림을 보여주는 메서드 (기존 알림이 있으면 업데이트)
+  private showNotification(message: string, duration: number = 2000) {
+    this.notificationUI.setVisible(true);
+    this.notificationUI.updateMessage(message);
+    this.notificationUI.setDepth(10001);
+
+    // 일정 시간이 지나면 알림을 숨기도록 설정
+    this.scene.time.delayedCall(duration, () => {
+      this.notificationUI.setVisible(false);
+    });
   }
 
   public setQuiz(questionNumber: number) {
     this.currentQuestion = this.getQuizQuestion(questionNumber)
   }
 
+  public playerJoinQuiz(playerName: string, quizPlayers: number) {
+    const state = store.getState();
+    if (!state.quiz.quizInProgress) {
+      this.showNotification(`${playerName}님이 퀴즈에 입장했습니다!`, 2000);
+    } else {
+      this.showNotification(`현재 ${quizPlayers}명 OX 퀴즈에 도전 중!`, 2000);
+    }
+  }
+
+  public playerJoinedQuiz(waitingTime: number) {
+    this.showNotification(`${waitingTime}초 뒤에 퀴즈가 시작됩니다!\n준비하세요!`, 2000);
+  }
+
+  public playerWaitQuiz(waitingTime: number) {
+    this.showNotification(`퀴즈가 이미 시작됐습니다!\n${waitingTime}초 후에 새로운 라운드에 자동으로 합류됩니다!`, 2000);
+  }
+
+  public playerLeftQuiz(isJoinedGame: Boolean, playerName: string, quizPlayers: number) {
+    if (!isJoinedGame) {
+      return
+    }
+    
+    const state = store.getState();
+    if (state.quiz.quizInProgress) {
+      this.showNotification(`${playerName}님이 퀴즈에 퇴장했습니다!`, 2000);
+    } else {
+      this.showNotification(`현재 ${quizPlayers}명 OX 퀴즈에 도전 중!`, 2000);
+    }
+  }
+
+  public playerLeftQuiz2() {
+    this.showNotification(`OX 퀴즈에서 나갔습니다!\n다음에 다시 도전해보세요!`, 2000);
+  }
+
   public startQuiz(x: number, y: number) {
-    if (this.isActive) {
+    const quizInProgress = store.getState().quiz.quizInProgress;
+    if (!quizInProgress) {
       return;
     }
-    this.isActive = true
-    this.showQuiz(x, y)
+
+    store.dispatch(pushQuizStartedMessage());
+    this.showNotification('퀴즈가 시작되었습니다!', 2000);
+    this.showQuiz(x, y);
   }
   
   public endQuiz(answer?: boolean) {
     if (answer === undefined) {
-      this.cleanupQuizUI()
+      this.cleanupQuizUI();
     } else {
-      const result = answer ? 'O': 'X'
-      this.update(result)
-      this.isActive = false
+      const result = answer ? 'O' : 'X';
+      this.update(result);
     }
   }
-  // Show the quiz based on the quiz type and remaining time
+
   public showQuiz(x: number, y: number) {
     // Create and display the quiz UI
-    this.createQuizUI(x, y)
+    this.createQuizUI(x, y);
   }
-  // Hide the quiz
+
   public hideQuiz() {
-    // if (!this.isActive) {
-    //   return;
-    // }
     this.cleanupQuizUI();
   }
 
-  // Get the quiz question based on the quiz type
   private getQuizQuestion(quizType: number): QuizQuestion {
     const quizQuestions: { [key: number]: QuizQuestion } = {
       1: { text: '태양은 지구보다 크다.', correctAnswer: 'O' },
@@ -84,14 +131,13 @@ export default class Quiz {
     };
   }
 
-  // Update method to check for key inputs
   public update(answer: string) {
-    if (!this.isActive) {
+    const quizInProgress = store.getState().quiz.quizInProgress;
+    if (quizInProgress) {
       return;
     }
 
     if (this.currentQuestion.correctAnswer == 'O') {
-      // AnswerCorrect와 AnswerIncorrect의 가시성 조정
       this.answerCorrectGroup.getChildren().forEach((child) => {
         const item = child as AnswerCorrect;
         item.setVisible(true);
@@ -101,8 +147,7 @@ export default class Quiz {
           item.setVisible(false);
         });
       });
-    }
-    else {
+    } else {
       this.answerIncorrectGroup.getChildren().forEach((child) => {
         const item = child as AnswerIncorrect;
         item.setVisible(true);
@@ -117,7 +162,6 @@ export default class Quiz {
     this.handleAnswer(answer);
   }
 
-  // Handle the answer submission
   private async handleAnswer(answer: string) {
     const isCorrect = answer === this.currentQuestion!.correctAnswer;
     const prizeMoney = isCorrect ? 100 : 0;
@@ -125,28 +169,22 @@ export default class Quiz {
     // Get the token from localStorage
     const token = localStorage.getItem('accessToken');
     if (!token) {
-      this.quizUI.displayResult('로그인이 필요합니다.');
-      // this.cleanupQuizUI();
+      this.quizUI?.displayResult('로그인이 필요합니다.');
       return;
     }
 
     try {
-      // 서버에 정답 제출 요청
       const serverResponse = await submitQuizAnswer(isCorrect, prizeMoney, token);
-
       const { isCorrect: responseCorrect, prizeMoney: responseMoney } = serverResponse.data;
 
-      // 서버의 응답에 따라 결과 표시
       const resultMessage = responseCorrect
         ? `정답입니다! 상금: ${responseMoney}원`
         : '틀렸습니다!';
-      this.quizUI.displayResult(resultMessage);
+      this.quizUI?.displayResult(resultMessage);
     } catch (error) {
-      // 에러 처리
-      this.quizUI.displayResult('서버 오류가 발생했습니다.');
+      this.quizUI?.displayResult('서버 오류가 발생했습니다.');
     }
 
-    // UI 정리
     this.cleanupQuizUI();
   }
 
@@ -155,16 +193,11 @@ export default class Quiz {
       this.quizUI.destroy(true);
       this.quizUI = undefined;
     }
-    this.isActive = false;
+    store.dispatch(pushQuizEndedMessage());
   }
 
   private createQuizUI(x: number, y: number) {
     this.quizUI = new QuizUI(this.scene, x, y, this.currentQuestion!.text);
     this.quizUI.setDepth(1000);
   }
-
-  public isQuizActive(): boolean {
-    return this.isActive;
-  }
-
 }

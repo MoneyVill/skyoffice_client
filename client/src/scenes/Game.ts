@@ -104,13 +104,14 @@ export default class Game extends Phaser.Scene {
 
     // Add tilesets
     const FloorAndGround = this.map.addTilesetImage('FloorAndGround', 'tiles_wall')
-    const mark = this.map.addTilesetImage('mark', 'tiles_wall2')
+    const ground2 = this.map.addTilesetImage('Basement', 'building')
 
     // Create map layers
     const groundLayer = this.map.createLayer('Ground', FloorAndGround)
-    const groundLayer2 = this.map.createLayer('Ground2', mark)
+    const groundLayer2 = this.map.createLayer('Ground2', ground2)
     groundLayer.setCollisionByProperty({ collides: true })
     groundLayer2.setCollisionByProperty({ collides: true })
+    groundLayer2.setCollisionByExclusion([-1]);
 
     this.answerCorrectGroup = this.physics.add.staticGroup({ classType: AnswerCorrect });
     const answerCorrectLayer = this.map.getObjectLayer('AnswerCorrect');
@@ -172,6 +173,8 @@ export default class Game extends Phaser.Scene {
         'whiteboards',
         'whiteboard'
       ) as Whiteboard
+
+      item.setVisible(false)
       const id = `${i}`
       item.id = id
       this.whiteboardMap.set(id, item)
@@ -192,9 +195,8 @@ export default class Game extends Phaser.Scene {
 
     // Import other objects from the tilemap
     this.addGroupFromTiled('Wall', 'tiles_wall', 'FloorAndGround', false)
-    this.addGroupFromTiled('Objects', 'office', 'Modern_Office_Black_Shadow', false)
-    this.addGroupFromTiled('Newobject', 'school', 'Classroom_and_library', true)
-    this.addGroupFromTiled('ObjectsOnCollide', 'office', 'Modern_Office_Black_Shadow', true)
+    this.addGroupFromTiled('Objects', 'newdesign', 'Newdesign', false)
+    this.addGroupFromTiled('ObjectsOnCollide', 'newdesign', 'Newdesign', true)
     this.addGroupFromTiled('GenericObjects', 'generic', 'Generic', false)
     this.addGroupFromTiled('GenericObjectsOnCollide', 'generic', 'Generic', true)
     this.addGroupFromTiled('AnswerObject', 'cross', 'answerincorrect', false)
@@ -208,6 +210,7 @@ export default class Game extends Phaser.Scene {
     this.cameras.main.startFollow(this.myPlayer, true)
 
     this.physics.add.collider([this.myPlayer, this.myPlayer.playerContainer], groundLayer)
+    this.physics.add.collider([this.myPlayer, this.myPlayer.playerContainer], groundLayer2)
     this.physics.add.collider([this.myPlayer, this.myPlayer.playerContainer], vendingMachines)
 
     // Set up overlap with items

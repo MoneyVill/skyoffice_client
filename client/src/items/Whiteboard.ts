@@ -1,3 +1,4 @@
+//client/src/items/Whiteboard.ts
 import { ItemType } from '../../../types/Items'
 import store from '../stores'
 import Item from './Item'

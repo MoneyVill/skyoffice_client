@@ -1,3 +1,4 @@
+//client/src/components/WhiteboardDialog.tsx
 import React from 'react'
 import styled from 'styled-components'
 import IconButton from '@mui/material/IconButton'

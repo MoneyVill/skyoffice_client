@@ -12842,7 +12842,7 @@
  <tileset firstgid="6813" name="Newdesign" tilewidth="32" tileheight="32" tilecount="1980" columns="60">
   <image source="../tileset/Newdesign.png" width="1920" height="1080"/>
  </tileset>
- <layer id="2" name="Ground" width="40" height="30" locked="1">
+ <layer id="2" name="Ground" width="40" height="30" visible="0" locked="1">
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,3221225690,3221225689,3221225689,3221225689,3221225689,3221225689,3221225689,3221225689,3221225689,3221225689,3221225689,3221225689,3221225689,3221225689,3221225689,3221225689,3221225689,3221225689,3221225689,3221225689,3221225689,3221225689,3221225689,3221225689,3221225689,3221225689,3221225689,3221225689,3221225689,3221225689,3221225689,3221225689,3221225689,3221225689,3221225689,3221225689,3221225688,
@@ -12876,7 +12876,7 @@
 0,0,0,0,0,0,0,0,0,0,0,0,216,217,217,217,217,217,217,217,217,217,217,217,217,217,217,217,217,217,218,0,0,0,0,0,0,0,0,0
 </data>
  </layer>
- <objectgroup id="21" name="AnswerObject" locked="1">
+ <objectgroup id="21" name="AnswerObject" visible="0" locked="1">
   <object id="1544" gid="4768" x="768" y="768" width="32" height="32"/>
   <object id="1545" gid="4769" x="800" y="768" width="32" height="32"/>
   <object id="1555" gid="4771" x="864" y="768" width="32" height="32"/>
@@ -12920,8 +12920,8 @@
   <object id="1710" gid="4830" x="544" y="896" width="32" height="32"/>
   <object id="1711" gid="4829" x="512" y="896" width="32" height="32"/>
  </objectgroup>
- <objectgroup id="3" name="Wall" locked="1"/>
- <objectgroup id="23" name="AnswerIncorrect" locked="1" opacity="0.5">
+ <objectgroup id="3" name="Wall" visible="0" locked="1"/>
+ <objectgroup id="23" name="AnswerIncorrect" visible="0" locked="1" opacity="0.5">
   <object id="1620" gid="4725" x="736" y="736" width="32" height="32"/>
   <object id="1621" gid="4726" x="768" y="736" width="32" height="32"/>
   <object id="1622" gid="4727" x="800" y="736" width="32" height="32"/>
@@ -12955,7 +12955,7 @@
   <object id="1654" gid="4756" x="768" y="896" width="32" height="32"/>
   <object id="1655" gid="4755" x="736" y="896" width="32" height="32"/>
  </objectgroup>
- <objectgroup id="22" name="AnswerCorrect" locked="1" opacity="0.5">
+ <objectgroup id="22" name="AnswerCorrect" visible="0" locked="1" opacity="0.5">
   <object id="1583" gid="4689" x="448" y="736" width="32" height="32"/>
   <object id="1584" gid="4690" x="480" y="736" width="32" height="32"/>
   <object id="1585" gid="4691" x="512" y="736" width="32" height="32"/>
@@ -12993,15 +12993,15 @@
   <object id="1618" gid="4720" x="480" y="896" width="32" height="32"/>
   <object id="1619" gid="4719" x="448" y="896" width="32" height="32"/>
  </objectgroup>
- <layer id="18" name="Ground2" width="40" height="30" locked="1">
+ <layer id="18" name="Ground2" width="40" height="30">
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,6054,6055,6056,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,6114,6115,6116,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,6174,6175,6176,6177,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,6234,6235,6236,6237,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,6294,6295,6296,6297,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,5261,0,0,0,0,0,0,0,0,6161,0,0,6354,6355,6356,6357,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,6154,0,0,0,0,0,0,0,0,0,0,0,6414,6415,6416,6417,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,6354,6355,6356,6357,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,6414,6415,6416,6417,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,6474,6475,6476,6477,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,6534,6535,6536,6537,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,6098,0,0,0,0,0,0,0,6594,6595,6596,6597,0,0,0,0,4894,4895,4896,4897,4898,4899,4900,4901,4902,0,0,0,0,
@@ -13027,8 +13027,8 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>
  </layer>
- <objectgroup id="4" name="Chair" locked="1"/>
- <objectgroup id="5" name="Objects">
+ <objectgroup id="4" name="Chair" visible="0" locked="1"/>
+ <objectgroup id="5" name="Objects" visible="0" locked="1">
   <object id="2713" gid="7054" x="224" y="224" width="32" height="32"/>
   <object id="2714" gid="7114" x="224" y="256" width="32" height="32"/>
   <object id="2715" gid="7055" x="256" y="224" width="32" height="32"/>
@@ -13104,7 +13104,7 @@
   <object id="2837" gid="7421" x="520" y="433.333" width="32" height="32"/>
   <object id="2838" gid="7421" x="177.333" y="120" width="32" height="32"/>
  </objectgroup>
- <objectgroup id="7" name="ObjectsOnCollide">
+ <objectgroup id="7" name="ObjectsOnCollide" visible="0" locked="1">
   <object id="2738" gid="7478" x="789.333" y="708" width="32" height="32"/>
   <object id="2739" gid="7477" x="757.333" y="708" width="32" height="32"/>
   <object id="2755" gid="7775" x="628" y="617.333" width="32" height="32"/>
@@ -13148,15 +13148,15 @@
   <object id="2828" gid="7478" x="1134" y="226" width="32" height="32"/>
   <object id="2829" gid="7477" x="1102" y="226" width="32" height="32"/>
  </objectgroup>
- <objectgroup id="6" name="GenericObjects" locked="1"/>
- <objectgroup id="8" name="GenericObjectsOnCollide" locked="1"/>
- <objectgroup id="9" name="Computer" locked="1"/>
- <objectgroup id="10" name="Whiteboard" locked="1">
+ <objectgroup id="6" name="GenericObjects" visible="0" locked="1"/>
+ <objectgroup id="8" name="GenericObjectsOnCollide" visible="0" locked="1"/>
+ <objectgroup id="9" name="Computer" visible="0" locked="1"/>
+ <objectgroup id="10" name="Whiteboard" visible="0" locked="1">
   <object id="880" gid="4685" x="326.666" y="500.667" width="64" height="64"/>
   <object id="881" gid="4686" x="970" y="507" width="64" height="64"/>
   <object id="1263" gid="4687" x="638.667" y="415.333" width="64" height="64"/>
  </objectgroup>
- <objectgroup id="14" name="VendingMachine" locked="1">
+ <objectgroup id="14" name="VendingMachine" visible="0" locked="1">
   <object id="1327" gid="4688" x="664.167" y="848.834" width="48" height="72"/>
  </objectgroup>
 </map>

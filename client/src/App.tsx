@@ -53,8 +53,8 @@ function App() {
       ui = (
         /* Render Chat or VideoConnectionDialog if no dialogs are opened. */
         <>
-          <Navbar />
           <Chat />
+          <Navbar />
           {/* Render VideoConnectionDialog if user is not connected to a webcam. */}
           {/* {!videoConnected && <VideoConnectionDialog />} */}
           <MobileVirtualJoystick />

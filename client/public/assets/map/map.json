@@ -576,7 +576,6 @@
         {
          "draworder":"topdown",
          "id":23,
-         "locked":true,
          "name":"AnswerIncorrect",
          "objects":[
                 {
@@ -962,6 +961,18 @@
                  "width":32,
                  "x":736,
                  "y":896
+                }, 
+                {
+                 "gid":8053,
+                 "height":32,
+                 "id":1714,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":864,
+                 "y":736
                 }],
          "opacity":0.5,
          "type":"objectgroup",
@@ -2991,8 +3002,13 @@
          "x":0,
          "y":0
         }],
+<<<<<<< HEAD
  "nextlayerid":25,
  "nextobjectid":2839,
+=======
+ "nextlayerid":24,
+ "nextobjectid":1715,
+>>>>>>> 0969a971aea4fdc1fe04d790e746824ac6520930
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.11.0",

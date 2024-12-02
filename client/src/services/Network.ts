@@ -135,11 +135,13 @@ export default class Network {
           const { field, value } = change
           phaserEvents.emit(Event.PLAYER_UPDATED, field, value, key)
           // when a new player finished setting up player name
-          if (field === 'name' && value !== '') {
-            phaserEvents.emit(Event.PLAYER_JOINED, player, key)
-            store.dispatch(setPlayerNameMap({ id: key, name: value }))
-            store.dispatch(pushPlayerJoinedMessage(value))
-          }
+          setTimeout(() => {
+            if (field === 'name' && value !== '') {
+              phaserEvents.emit(Event.PLAYER_JOINED, player, key)
+              store.dispatch(setPlayerNameMap({ id: key, name: value }))
+              store.dispatch(pushPlayerJoinedMessage(value))
+            }
+          }, 200)
         })
       }
     }

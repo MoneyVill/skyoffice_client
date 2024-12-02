@@ -277,24 +277,28 @@ export default class Game extends Phaser.Scene {
 
   private handleEndQuiz() {
     store.dispatch(pushQuizEndedMessage());
-    this.quiz.endQuiz(this.myPlayer.getAnswer())
-    this.myPlayer.hideProgressBar();
+    const state = store.getState();
+    const isPlayerJoinQuiz = state.quiz.participants.includes(this.myPlayer.playerName.text);
+    if (isPlayerJoinQuiz) {
+      this.quiz.endQuiz(this.myPlayer.getAnswer())
+      this.myPlayer.hideProgressBar();
+    }
   }
 
   private handlePlayerLeftQuiz(data: { playerName: string }) {
+    this.quiz.playerLeftQuiz2(data.playerName)
+  }
+
+  private handleLeftQuiz() {
     store.dispatch(playerLeftQuiz(this.myPlayer.playerName.text))
     store.dispatch(playerWaitingForQuiz(false));
 
     const state = store.getState();
     const participantsCount = state.quiz.participants.length
-    const isPlayerJoinQuiz = state.quiz.participants.includes(this.myPlayer.playerName.text);
-    this.quiz.playerLeftQuiz(isPlayerJoinQuiz, data.playerName, participantsCount)
+
+    this.quiz.playerLeftQuiz(this.myPlayer.playerName.text, participantsCount)
     this.quiz.endQuiz(undefined)
     this.myPlayer.hideProgressBar();
-  }
-
-  private handleLeftQuiz() {
-    this.quiz.playerLeftQuiz2()
   }
 
   private handleItemSelectorOverlap(playerSelector, selectionItem) {

@@ -71,11 +71,7 @@ export default class Quiz {
     this.showNotification(`퀴즈가 이미 시작됐습니다!\n${waitingTime}초 후에 새로운 라운드에 자동으로 합류됩니다!`, 2000);
   }
 
-  public playerLeftQuiz(isJoinedGame: Boolean, playerName: string, quizPlayers: number) {
-    if (!isJoinedGame) {
-      return
-    }
-    
+  public playerLeftQuiz(playerName: string, quizPlayers: number) {
     const state = store.getState();
     if (state.quiz.quizInProgress) {
       this.showNotification(`${playerName}님이 퀴즈에 퇴장했습니다!`, 2000);
@@ -84,8 +80,8 @@ export default class Quiz {
     }
   }
 
-  public playerLeftQuiz2() {
-    this.showNotification(`OX 퀴즈에서 나갔습니다!\n다음에 다시 도전해보세요!`, 2000);
+  public playerLeftQuiz2(playerName: string) {
+    this.showNotification(`${playerName}님이 퀴즈에서 나갔습니다!`, 2000);
   }
 
   public startQuiz(x: number, y: number) {

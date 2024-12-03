@@ -5,9 +5,9 @@ import styled from 'styled-components';
 const TaxAlertWrapper = styled.div`
   position: fixed;
   bottom: 10px;
-  left: 10px;
-  width: 300px;
-  background: rgba(255, 0, 0, 0.8);
+  right: 120px;
+  width: 200px;
+  background: rgba(249, 159, 159, 0.8);
   color: white;
   padding: 10px;
   border-radius: 8px;
@@ -18,6 +18,11 @@ const TaxAlertWrapper = styled.div`
     0%, 100% { opacity: 0; }
     10%, 90% { opacity: 1; }
   }
+`;
+
+const TaxHeader = styled.h4`
+  margin: 2px 0 8px 0; /* 상단 여백 제거, 하단 여백만 추가 */
+  font-size: 16px; /* 필요하면 글꼴 크기 조정 */
 `;
 
 const TaxDetails = styled.div`
@@ -39,7 +44,7 @@ const TaxAlert: React.FC = () => {
         setTaxDetails(receivedData);
 
         // 알림은 5초 후 사라지도록 설정
-        setTimeout(() => setTaxDetails([]), 5000);
+        setTimeout(() => setTaxDetails([]), 29000);
       } catch (error) {
         console.error('WebSocket 데이터 처리 오류:', error);
       }
@@ -64,7 +69,7 @@ const TaxAlert: React.FC = () => {
 
   return (
     <TaxAlertWrapper>
-      <h4>세금 알림</h4>
+      <TaxHeader>과세 대상자입니다.</TaxHeader>
       {taxDetails.map((detail, index) => (
         <TaxDetails key={index}>
           {`${detail.nickname}: ${detail.taxAmount.toLocaleString()}원`}

@@ -100,34 +100,6 @@ const Navbar = () => {
     totalStockReturn: 0
   });
 
-  const [bgmStatus, setBgmStatus] = useState(false);
-  const [audio] = useState(new Audio('/client/assets/audio/bgm.mp3'));
-
-  useEffect(() => {
-    audio.loop = true; // 반복 재생 설정
-    audio.play();
-    setBgmStatus(true);
-  }, [audio]);
-
-  const handleClick = (e: React.MouseEvent) => {
-    const target = e.currentTarget as HTMLElement;
-    if (target.ariaLabel === '브금') {
-      if (bgmStatus) {
-        audio.pause();
-      } else {
-        audio.play();
-      }
-      setBgmStatus(!bgmStatus);
-    }
-  };
-
-  useEffect(() => {
-    return () => {
-      audio.pause();
-      audio.currentTime = 0;
-    };
-  }, [audio]);
-
   const fetchUserInfo = async () => {
     try {
       const accessToken = localStorage.getItem('accessToken');
@@ -188,16 +160,6 @@ const Navbar = () => {
           </StatBox>
         </StatsSection>
       </NavbarWrapper>
-
-      <BgmButton
-        aria-label="브금"
-        onClick={handleClick}
-      >
-        <img 
-          src={bgmStatus ? '/client/assets/items/bgm.png' : '/client/assets/items/bgmoff.png'} 
-          alt={bgmStatus ? "BGM ON" : "BGM OFF"}
-        />
-      </BgmButton>
     </>
   );
 };

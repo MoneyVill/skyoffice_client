@@ -44,7 +44,7 @@ const TaxAlert: React.FC = () => {
         setTaxDetails(receivedData);
 
         // 알림은 5초 후 사라지도록 설정
-        setTimeout(() => setTaxDetails([]), 29000);
+        setTimeout(() => setTaxDetails([]), 5000);
       } catch (error) {
         console.error('WebSocket 데이터 처리 오류:', error);
       }

@@ -8,6 +8,7 @@ import whiteboardReducer from './WhiteboardStore'
 import chatReducer from './ChatStore'
 import roomReducer from './RoomStore'
 import quizReducer from './QuizStore'
+import notificationReducer from './NotificationStore';
 import { NonAuthApi } from './NonAuthApi';
 
 enableMapSet()
@@ -20,6 +21,7 @@ const store = configureStore({
     chat: chatReducer,
     room: roomReducer,
     quiz: quizReducer,
+    notification: notificationReducer,
     [NonAuthApi.reducerPath]: NonAuthApi.reducer,
   },
   // Temporary disable serialize check for redux as we store MediaStream in ComputerStore.

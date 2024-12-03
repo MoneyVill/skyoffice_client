@@ -14,6 +14,9 @@ import Scoreboard from './components/Scoreboard'
 import MobileVirtualJoystick from './components/MobileVirtualJoystick'
 import {BrowserRouter} from 'react-router-dom'
 import Navbar from './components/Navbar'
+import { Provider } from 'react-redux';
+import store from './stores';
+import NotificationStack from './components/common/StackNotification/NotificationStack';
 
 const Backdrop = styled.div`
   position: absolute;
@@ -71,12 +74,15 @@ function App() {
   }
 
   return (
-    <BrowserRouter basename='/client'>
-      <Backdrop>
-        <Scoreboard />
-        {ui}
-      </Backdrop>
-    </BrowserRouter>
+    <Provider store={store}>
+      <BrowserRouter basename='/client'>
+        <Backdrop>
+          <NotificationStack />
+          <Scoreboard />
+          {ui}
+        </Backdrop>
+      </BrowserRouter>
+    </Provider>
   )
 }
 

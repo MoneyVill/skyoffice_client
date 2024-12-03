@@ -111,13 +111,19 @@ export default class Game extends Phaser.Scene {
     // Add tilesets
     const FloorAndGround = this.map.addTilesetImage('FloorAndGround', 'tiles_wall')
     const ground2 = this.map.addTilesetImage('Basement', 'building')
+    const groundCorrect = this.map.addTilesetImage('answercorrect', 'circle')
+    const groundIncorrect = this.map.addTilesetImage('answerincorrect', 'cross')
 
     // Create map layers
     const groundLayer = this.map.createLayer('Ground', FloorAndGround)
     const groundLayer2 = this.map.createLayer('Ground2', ground2)
+    const groundLayerCorrect = this.map.createLayer('Groundcorrect', groundCorrect)
+    const groundLayerIncorrect = this.map.createLayer('Groundincorrect', groundIncorrect)
     groundLayer.setCollisionByProperty({ collides: true })
     groundLayer2.setCollisionByProperty({ collides: true })
     groundLayer2.setCollisionByExclusion([-1]);
+    groundLayerCorrect.setCollisionByProperty({ collides:false })
+    groundLayerIncorrect.setCollisionByProperty({ collides:false })
 
     this.answerCorrectGroup = this.physics.add.staticGroup({ classType: AnswerCorrect });
     const answerCorrectLayer = this.map.getObjectLayer('AnswerCorrect');
@@ -205,8 +211,6 @@ export default class Game extends Phaser.Scene {
     this.addGroupFromTiled('ObjectsOnCollide', 'newdesign', 'Newdesign', true)
     this.addGroupFromTiled('GenericObjects', 'generic', 'Generic', false)
     this.addGroupFromTiled('GenericObjectsOnCollide', 'generic', 'Generic', true)
-    this.addGroupFromTiled('AnswerObject', 'cross', 'answerincorrect', false)
-    this.addGroupFromTiled('AnswerObject', 'circle', 'answercorrect', false)
 
     // Group for other players
     this.otherPlayers = this.physics.add.group({ classType: OtherPlayer })

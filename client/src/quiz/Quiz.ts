@@ -158,7 +158,7 @@ export default class Quiz {
       this.answerCorrectGroup.getChildren().forEach((child) => {
         const item = child as AnswerCorrect;
         item.setVisible(true);
-        item.setDepth(10001);
+        item.setDepth(500);
 
         this.scene.time.delayedCall(2000, () => {
           item.setVisible(false);
@@ -168,7 +168,7 @@ export default class Quiz {
       this.answerIncorrectGroup.getChildren().forEach((child) => {
         const item = child as AnswerIncorrect;
         item.setVisible(true);
-        item.setDepth(10001);
+        item.setDepth(500);
 
         this.scene.time.delayedCall(2000, () => {
           item.setVisible(false);

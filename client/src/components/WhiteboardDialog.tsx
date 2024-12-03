@@ -14,7 +14,7 @@ const Backdrop = styled.div`
   width: 100%;
   height: 90%;
   overflow: hidden;
-  padding: 16px 800px 16px 16px;
+  padding: 16px 350px 16px 16px;
   z-index: 100;
 `
 const Wrapper = styled.div`

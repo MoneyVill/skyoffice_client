@@ -105,6 +105,8 @@ const Navbar = () => {
 
   useEffect(() => {
     audio.loop = true; // 반복 재생 설정
+    audio.play();
+    setBgmStatus(true);
   }, [audio]);
 
   const handleClick = (e: React.MouseEvent) => {

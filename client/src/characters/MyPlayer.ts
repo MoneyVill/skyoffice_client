@@ -23,7 +23,6 @@ export default class MyPlayer extends Player {
   private playContainerBody: Phaser.Physics.Arcade.Body;
   private chairOnSit?: Chair | VendingMachine;
   private isAnswerCorrect?: boolean;
-  public isParticipatingInQuiz: boolean;
   public joystickMovement?: JoystickMovement;
 
   constructor(
@@ -36,15 +35,6 @@ export default class MyPlayer extends Player {
   ) {
     super(scene, x, y, texture, id, frame)
     this.playContainerBody = this.playerContainer.body as Phaser.Physics.Arcade.Body
-    this.isParticipatingInQuiz = false
-  }
-
-  joinQuiz() {
-    this.isParticipatingInQuiz = true;
-  }
-
-  leaveQuiz() {
-    this.isParticipatingInQuiz = false;
   }
 
   protected onProgressZero() {
@@ -93,6 +83,22 @@ export default class MyPlayer extends Player {
     network: Network
   ) {
     if (!cursors) return;
+
+    const state = store.getState()
+    const isPlayerInQuiz = state.quiz.participants.includes(this.playerName.text)
+    // y 좌표가 700보다 작아질 경우 서버에 퀴즈 나가기 요청을 보냄
+    if (this.y < 700 && isPlayerInQuiz) {
+      network.leaveQuiz();
+
+      const parts = this.anims.currentAnim.key.split('_');
+      parts[1] = 'idle';
+      this.play(parts.join('_'), true);
+      this.playerBehavior = PlayerBehavior.IDLE;
+
+      playerSelector.setPosition(this.x, this.y);
+      playerSelector.update(this, cursors);
+      network.updatePlayer(this.x, this.y, this.anims.currentAnim.key);
+    }
 
     const item = playerSelector.selectedItem
 
@@ -296,9 +302,7 @@ export default class MyPlayer extends Player {
           parts[1] = 'idle';
           this.play(parts.join('_'), true);
           this.playerBehavior = PlayerBehavior.IDLE;
-          // this.chairOnSit?.clearDialogBox();
 
-          this.hideProgressBar();
           playerSelector.setPosition(this.x, this.y);
           playerSelector.update(this, cursors);
           network.updatePlayer(this.x, this.y, this.anims.currentAnim.key);

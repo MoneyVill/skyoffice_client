@@ -27,7 +27,7 @@ import { ItemType } from '../../../types/Items'
 
 // Import store and events
 import store from '../stores'
-import { pushPlayerLeftMessage, setFocused, setShowChat } from '../stores/ChatStore'
+import { setFocused, setShowChat } from '../stores/ChatStore'
 import { NavKeys, Keyboard } from '../../../types/KeyboardState'
 import { 
   pushQuizStartedMessage,
@@ -254,11 +254,13 @@ export default class Game extends Phaser.Scene {
   }
 
   private handleJoinQuiz(data: { remainingTime: number }) {
-    this.quiz.playerJoinedQuiz(data.remainingTime)
+    const remainingTimeInt = Math.floor(data.remainingTime);
+    this.quiz.playerJoinedQuiz(remainingTimeInt)
   }
 
   private handlePlayerWaitQuiz(data: { timeUntilNextQuiz: number }) {
-    this.quiz.playerWaitQuiz(data.timeUntilNextQuiz);
+    const remainingTimeInt = Math.floor(data.timeUntilNextQuiz);
+    this.quiz.playerWaitQuiz(remainingTimeInt);
     store.dispatch(playerWaitingForQuiz(true));
   }
 

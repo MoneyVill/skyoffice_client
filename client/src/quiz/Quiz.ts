@@ -1,12 +1,11 @@
 import store from '../stores';
-import { pushQuizStartedMessage, pushQuizEndedMessage, playerJoinedQuiz } from '../stores/QuizStore'; // Store actions 가져오기
+import { pushQuizStartedMessage, pushQuizEndedMessage } from '../stores/QuizStore';
+import { addNotification } from '../stores/NotificationStore';
 import Network from '../services/Network';
 import { submitQuizAnswer } from '../stores/api';
 import AnswerCorrect from '../items/AnswerCorrect';
 import AnswerIncorrect from '../items/AnswerIncorrect';
 import QuizUI from './QuizUI';
-import NotificationUI from '../quiz/NotificationUI';
-import MyPlayer from '../characters/MyPlayer';
 
 // Define the structure for a quiz question
 interface QuizQuestion {
@@ -17,12 +16,10 @@ interface QuizQuestion {
 export default class Quiz {
   private scene: Phaser.Scene;
   private network: Network;
-  private quizContainer?: Phaser.GameObjects.Container;
   private currentQuestion?: QuizQuestion;
   private answerCorrectGroup: Phaser.Physics.Arcade.StaticGroup;
   private answerIncorrectGroup: Phaser.Physics.Arcade.StaticGroup;
   private quizUI?: QuizUI;
-  private notificationUI: NotificationUI; // 알림 UI를 한 번 생성하여 재사용
 
   constructor(
     scene: Phaser.Scene, 
@@ -34,20 +31,16 @@ export default class Quiz {
     this.network = network;
     this.answerCorrectGroup = answerCorrectGroup;
     this.answerIncorrectGroup = answerIncorrectGroup;
-    this.notificationUI = new NotificationUI(this.scene, 688, 680, '');
-    this.notificationUI.setVisible(false);
   }
 
-  // 알림을 보여주는 메서드 (기존 알림이 있으면 업데이트)
-  private showNotification(message: string, duration: number = 2000) {
-    this.notificationUI.setVisible(true);
-    this.notificationUI.updateMessage(message);
-    this.notificationUI.setDepth(10001);
-
-    // 일정 시간이 지나면 알림을 숨기도록 설정
-    this.scene.time.delayedCall(duration, () => {
-      this.notificationUI.setVisible(false);
-    });
+  private showNotification(message: string, duration: number = 2000, type: 'alert' | 'ok' = 'alert') {
+    store.dispatch(
+      addNotification({
+        content: message,
+        duration,
+        type,
+      })
+    );
   }
 
   public setQuiz(questionNumber: number) {
@@ -57,31 +50,31 @@ export default class Quiz {
   public playerJoinQuiz(playerName: string, quizPlayers: number) {
     const state = store.getState();
     if (!state.quiz.quizInProgress) {
-      this.showNotification(`${playerName}님이 퀴즈에 입장했습니다!`, 2000);
+      this.showNotification(`${playerName}님이 퀴즈에 입장했습니다!`, 2000, 'alert');
     } else {
-      this.showNotification(`현재 ${quizPlayers}명 OX 퀴즈에 도전 중!`, 2000);
+      this.showNotification(`현재 ${quizPlayers}명 OX 퀴즈에 도전 중!`, 2000, 'ok');
     }
   }
 
   public playerJoinedQuiz(waitingTime: number) {
-    this.showNotification(`${waitingTime}초 뒤에 퀴즈가 시작됩니다!\n준비하세요!`, 2000);
+    this.showNotification(`${waitingTime}초 뒤에 퀴즈가 시작됩니다!\n준비하세요!`, 2000, 'alert');
   }
 
   public playerWaitQuiz(waitingTime: number) {
-    this.showNotification(`퀴즈가 이미 시작됐습니다!\n${waitingTime}초 후에 새로운 라운드에 자동으로 합류됩니다!`, 2000);
+    this.showNotification(`퀴즈가 이미 시작됐습니다!\n${waitingTime}초 후에 새로운 라운드에 자동으로 합류됩니다!`, 2000, 'alert');
   }
 
   public playerLeftQuiz(playerName: string, quizPlayers: number) {
     const state = store.getState();
     if (state.quiz.quizInProgress) {
-      this.showNotification(`${playerName}님이 퀴즈에 퇴장했습니다!`, 2000);
+      this.showNotification(`${playerName}님이 퀴즈에 퇴장했습니다!`, 2000, 'alert');
     } else {
-      this.showNotification(`현재 ${quizPlayers}명 OX 퀴즈에 도전 중!`, 2000);
+      this.showNotification(`현재 ${quizPlayers}명 OX 퀴즈에 도전 중!`, 2000, 'ok');
     }
   }
 
   public playerLeftQuiz2(playerName: string) {
-    this.showNotification(`${playerName}님이 퀴즈에서 나갔습니다!`, 2000);
+    this.showNotification(`${playerName}님이 퀴즈에서 나갔습니다!`, 2000, 'alert');
   }
 
   public startQuiz(x: number, y: number) {
@@ -91,7 +84,7 @@ export default class Quiz {
     }
 
     store.dispatch(pushQuizStartedMessage());
-    this.showNotification('퀴즈가 시작되었습니다!', 2000);
+    this.showNotification('퀴즈가 시작되었습니다!', 2000, 'alert');
     this.showQuiz(x, y);
   }
   
@@ -128,11 +121,6 @@ export default class Quiz {
   }
 
   public update(answer: string) {
-    const quizInProgress = store.getState().quiz.quizInProgress;
-    if (quizInProgress) {
-      return;
-    }
-
     if (this.currentQuestion.correctAnswer == 'O') {
       this.answerCorrectGroup.getChildren().forEach((child) => {
         const item = child as AnswerCorrect;

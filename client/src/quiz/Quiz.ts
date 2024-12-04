@@ -68,14 +68,10 @@ export default class Quiz {
   public playerLeftQuiz(playerName: string, quizPlayers: number) {
     const state = store.getState();
     if (state.quiz.quizInProgress) {
-      this.showNotification(`${playerName}님이 퀴즈에 퇴장했습니다!`, 2000, 'alert');
+      this.showNotification(`${playerName}님이 퀴즈에 나갔습니다!`, 2000, 'alert');
     } else {
       this.showNotification(`현재 ${quizPlayers}명 OX 퀴즈에 도전 중!`, 2000, 'ok');
     }
-  }
-
-  public playerLeftQuiz2(playerName: string) {
-    this.showNotification(`${playerName}님이 퀴즈에서 나갔습니다!`, 2000, 'alert');
   }
 
   public startQuiz(x: number, y: number) {

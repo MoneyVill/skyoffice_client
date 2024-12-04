@@ -248,7 +248,7 @@ export default class Game extends Phaser.Scene {
     this.network.onQuizStarted(this.handleStartQuiz, this)
     this.network.onQuizEnded(this.handleEndQuiz, this)
     this.network.onLeftQuiz(this.handleLeftQuiz, this)
-    this.network.onPlayerLeftQuiz(this.handlePlayerLeftQuiz, this)
+    // this.network.onPlayerLeftQuiz(this.handlePlayerLeftQuiz, this)
   }
 
   private handlePlayerJoinQuiz(data: { playerName: string; participantsCount: number; existingParticipants: string[] }) {
@@ -289,10 +289,6 @@ export default class Game extends Phaser.Scene {
       this.quiz.endQuiz(this.myPlayer.getAnswer())
       this.myPlayer.hideProgressBar();
     }
-  }
-
-  private handlePlayerLeftQuiz(data: { playerName: string }) {
-    this.quiz.playerLeftQuiz2(data.playerName)
   }
 
   private handleLeftQuiz() {

@@ -46,9 +46,9 @@ export default class MyPlayer extends Player {
     const playerX = this.x;
     const playerY = this.y;
 
-    if (playerX <= 670 && playerY >= 700) {
+    if (playerX < 640 && playerY >= 700) {
       answer = true;
-    } else if (playerX >= 720 && playerY >= 700) {
+    } else if (playerX > 640 && playerY >= 700) {
       answer = false;
     } else {
       // 플레이어가 답변 영역에 있지 않을 때 처리

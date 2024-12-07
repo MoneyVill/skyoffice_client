@@ -10,7 +10,6 @@ import muiTheme from './MuiTheme'
 import App from './App'
 import store from './stores'
 import Scoreboard from './components/Scoreboard'
-import TaxAlert from './components/TaxAlert'; // TaxAlert 임포트
 
 const container = document.getElementById('root')
 const root = createRoot(container!)
@@ -18,7 +17,6 @@ root.render(
   <React.StrictMode>
     <Provider store={store}>
       <ThemeProvider theme={muiTheme}>
-        <TaxAlert />
         <App />
       </ThemeProvider>
     </Provider>

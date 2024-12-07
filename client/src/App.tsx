@@ -45,6 +45,7 @@ function App() {
           <Navbar />
           <Chat />
           <ComputerDialog />
+          <TaxAlert />
         </>
       );
     } else if (whiteboardDialogOpen) {
@@ -53,6 +54,7 @@ function App() {
           <Navbar />
           <Chat />
           <WhiteboardDialog />
+          <TaxAlert />
         </>
       );
     } else {
@@ -60,7 +62,7 @@ function App() {
         <>
           <Chat />
           <Navbar />
-          <MobileVirtualJoystick />
+          <TaxAlert />
         </>
       );
     }
@@ -76,7 +78,6 @@ function App() {
         <Backdrop>
           <NotificationStack />
           <Scoreboard />
-          <TaxAlert />
           {ui}
         </Backdrop>
         <BgmPlayer /> 

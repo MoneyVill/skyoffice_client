@@ -16,6 +16,8 @@ import { Provider } from 'react-redux';
 import store from './stores';
 import NotificationStack from './components/common/StackNotification/NotificationStack';
 import BgmPlayer from './components/bgmPlayer';
+import useWebSocket from './hooks/useWebSocket';
+import TaxAlert from './components/alerts/TaxAlert'; 
 
 const Backdrop = styled.div`
   position: absolute;
@@ -25,6 +27,7 @@ const Backdrop = styled.div`
 `;
 
 function App() {
+  useWebSocket();
   const loggedIn = useAppSelector((state) => state.user.loggedIn);
   const computerDialogOpen = useAppSelector(
     (state) => state.computer.computerDialogOpen
@@ -73,6 +76,7 @@ function App() {
         <Backdrop>
           <NotificationStack />
           <Scoreboard />
+          <TaxAlert />
           {ui}
         </Backdrop>
         <BgmPlayer /> 

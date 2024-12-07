@@ -30,7 +30,7 @@ const BgmPlayer: React.FC = () => {
   const [bgmStatus, setBgmStatus] = useState<boolean>(() => {
     // 로컬 스토리지에서 이전 상태 불러오기
     const savedStatus = localStorage.getItem('bgmStatus');
-    return savedStatus === 'true';
+    return savedStatus !== null ? savedStatus === 'true' : true; // 기본값 true
   });
   const [audio] = useState<HTMLAudioElement>(
     () => new Audio('/client/assets/audio/bgm.mp3')

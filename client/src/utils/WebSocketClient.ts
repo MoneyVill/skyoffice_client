@@ -6,8 +6,9 @@ class WebSocketClient {
         console.error('Token is required for WebSocket connection.');
         return;
       }
-  
-      const wsUrl = `ws://localhost:8080/api/ws/notifications?token=${token}`;
+      
+      const wsUrl = `${import.meta.env.VITE_MODOO_API_URL}/api/ws/notifications?token=${token}`;
+      console.log(wsUrl);
       this.socket = new WebSocket(wsUrl);
   
       this.socket.onopen = () => {

@@ -140,7 +140,7 @@ const Scoreboard = () => {
               )}
               <PlayerName>{player.nickname}</PlayerName>
             </PlayerNameWrapper>
-            <PlayerStats>{player.totalMoney.toLocaleString()} gold</PlayerStats>
+            <PlayerStats>{player.totalMoney.toLocaleString()} 원</PlayerStats>
           </PlayerRow>
         ))}
         {error && <div style={{ color: 'red', marginTop: '10px' }}>{error}</div>}

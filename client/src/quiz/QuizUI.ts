@@ -1,74 +1,163 @@
-// /quiz/QuizUI.ts
+// client/src/quiz/QuizUI.ts
 
-export default class QuizUI extends Phaser.GameObjects.Container {
-  private questionText: Phaser.GameObjects.Text;
-  private optionsText: Phaser.GameObjects.Text;
+export default class QuizUI {
+  private container: HTMLDivElement;
+  private questionText: HTMLParagraphElement;
+  private optionsText: HTMLParagraphElement;
 
   constructor(scene: Phaser.Scene, x: number, y: number, question: string) {
-    super(scene, x, y);
+    this.injectStyles();
 
-    // 반투명 배경
-    const background = scene.add
-      .rectangle(0, 0, 500, 200, 0x000000, 0.7)
-      .setOrigin(0.5);
+    this.container = document.createElement('div');
+    this.container.classList.add('quiz-container');
 
-    // 퀴즈 질문 텍스트
-    this.questionText = scene.add
-      .text(0, -60, question, {
-        fontSize: '28px',
-        color: '#ffffff',
-        wordWrap: { width: 480, useAdvancedWrap: true },
-        align: 'center',
-      })
-      .setOrigin(0.5);
+    this.questionText = document.createElement('p');
+    this.questionText.classList.add('quiz-question');
+    this.questionText.textContent = question;
 
-    // 정답/오답 옵션 텍스트
-    this.optionsText = scene.add
-      .text(0, 20, '맞으면 O, 틀리면 X', {
-        fontSize: '24px',
-        color: '#ffffff',
-      })
-      .setOrigin(0.5);
+    this.optionsText = document.createElement('p');
+    this.optionsText.classList.add('quiz-options-text');
+    this.optionsText.textContent = '맞으면 O, 틀리면 X';
 
-    // 요소 추가
-    this.add([background, this.questionText, this.optionsText]);
+    this.container.appendChild(this.questionText);
+    this.container.appendChild(this.optionsText);
 
-    // 씬에 추가
-    scene.add.existing(this);
+    document.body.appendChild(this.container);
   }
-  // 결과를 표시하는 메서드 추가
+
+  private injectStyles() {
+    if (document.getElementById('quiz-ui-styles')) return;
+
+    const style = document.createElement('style');
+    style.id = 'quiz-ui-styles';
+    style.textContent = `
+      .quiz-container {
+        position: fixed;
+        top: 30%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 500px;
+        background-color: #fccaca;
+        color: #ffffff;
+        padding: 20px;
+        border-radius: 8px;
+        text-align: center;
+        z-index: 9999;
+        display: none;
+      }
+
+      .quiz-question {
+        font-size: 28px;
+        font-family: Arial, sans-serif;
+        margin-bottom: 20px;
+        word-wrap: break-word;
+        color: #575757;
+      }
+
+      .quiz-options-text {
+        font-size: 24px;
+        font-family: Arial, sans-serif;s
+        color: #575757;
+      }
+
+      .quiz-result-overlay {
+        position: fixed;
+        top: 25%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #fccaca;
+        color: #575757;
+        font-size: 32px;
+        padding: 20px;
+        border-radius: 8px;
+        z-index: 100000;
+      }
+
+      .quiz-correct-overlay, .quiz-incorrect-overlay {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 100px;
+        font-family: Arial, sans-serif;
+        font-weight: bold;
+        z-index: 100001;
+        padding: 20px 40px;
+        border-radius: 50%;
+        text-align: center;
+      }
+
+      .quiz-correct-overlay {
+        background-color: rgba(0, 255, 0, 0.7);
+        color: #575757;
+      }
+
+      .quiz-incorrect-overlay {
+        background-color: rgba(255, 0, 0, 0.7);
+        color: #575757;
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
   public displayResult(resultText: string) {
-      const centerX = this.x;
-      const centerY = this.y - 50;
+    console.log('Displaying result:', resultText); // Debugging
+    const result = document.createElement('div');
+    result.classList.add('quiz-result-overlay');
+    result.textContent = resultText;
 
-      const result = this.scene.add
-      .text(centerX, centerY, resultText, {
-          fontSize: '32px',
-          color: '#ffffff',
-          backgroundColor: '#000000',
-          padding: { x: 20, y: 10 },
-      })
-      .setOrigin(0.5)
-      .setDepth(1000);
+    document.body.appendChild(result);
 
-      // 1.5초 후 결과 텍스트를 제거합니다.
-      this.scene.time.delayedCall(1500, () => {
-      result.destroy();
-      });
+    setTimeout(() => {
+      if (result.parentNode) {
+        result.parentNode.removeChild(result);
+      }
+    }, 1500);
   }
 
-  // 퀴즈 텍스트 업데이트
+  public displayCorrectOverlay() {
+    console.log('Displaying Correct Overlay'); // Debugging
+    const overlay = document.createElement('div');
+    overlay.classList.add('quiz-correct-overlay');
+    overlay.textContent = 'O';
+    document.body.appendChild(overlay);
+
+    setTimeout(() => {
+      if (overlay.parentNode) {
+        overlay.parentNode.removeChild(overlay);
+      }
+    }, 2000);
+  }
+
+  public displayIncorrectOverlay() {
+    console.log('Displaying Incorrect Overlay'); // Debugging
+    const overlay = document.createElement('div');
+    overlay.classList.add('quiz-incorrect-overlay');
+    overlay.textContent = 'X';
+    document.body.appendChild(overlay);
+
+    setTimeout(() => {
+      if (overlay.parentNode) {
+        overlay.parentNode.removeChild(overlay);
+      }
+    }, 2000);
+  }
+
   public updateQuestion(question: string) {
-    this.questionText.setText(question);
+    this.questionText.textContent = question;
   }
 
-  // UI 숨기기
   public hide() {
-    this.setVisible(false);
+    this.container.style.display = 'none';
   }
 
-  // UI 표시하기
   public show() {
-    this.setVisible(true);
+    this.container.style.display = 'block';
+  }
+
+  public destroy() {
+    if (this.container.parentNode) {
+      this.container.parentNode.removeChild(this.container);
+    }
   }
 }

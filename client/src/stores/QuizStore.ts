@@ -1,3 +1,5 @@
+//client/src/stores/QuizStore.ts
+
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 export enum QuizStatus {

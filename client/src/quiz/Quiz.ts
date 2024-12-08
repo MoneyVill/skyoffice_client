@@ -1,3 +1,5 @@
+//client/src/quiz/Quiz.ts
+
 import store from '../stores';
 import { pushQuizStartedMessage, pushQuizEndedMessage } from '../stores/QuizStore';
 import { addNotification } from '../stores/NotificationStore';
@@ -149,6 +151,31 @@ export default class Quiz {
     return quizQuestions[quizType];
   }
 
+  // public update(answer: string) {
+  //   if (this.currentQuestion.correctAnswer == 'O') {
+  //     this.answerCorrectGroup.getChildren().forEach((child) => {
+  //       const item = child as AnswerCorrect;
+  //       item.setVisible(true);
+  //       item.setDepth(500);
+
+  //       this.scene.time.delayedCall(2000, () => {
+  //         item.setVisible(false);
+  //       });
+  //     });
+  //   } else {
+  //     this.answerIncorrectGroup.getChildren().forEach((child) => {
+  //       const item = child as AnswerIncorrect;
+  //       item.setVisible(true);
+  //       item.setDepth(500);
+
+  //       this.scene.time.delayedCall(2000, () => {
+  //         item.setVisible(false);
+  //       });
+  //     });
+  //   }
+
+  //   this.handleAnswer(answer);
+  // }
   public update(answer: string) {
     if (this.currentQuestion.correctAnswer == 'O') {
       this.answerCorrectGroup.getChildren().forEach((child) => {
@@ -203,7 +230,7 @@ export default class Quiz {
 
   private cleanupQuizUI() {
     if (this.quizUI) {
-      this.quizUI.destroy(true);
+      this.quizUI.destroy();
       this.quizUI = undefined;
     }
     store.dispatch(pushQuizEndedMessage());
@@ -211,6 +238,7 @@ export default class Quiz {
 
   private createQuizUI(x: number, y: number) {
     this.quizUI = new QuizUI(this.scene, x, y, this.currentQuestion!.text);
-    this.quizUI.setDepth(1000);
+    // this.quizUI.setDepth(1000);
+    this.quizUI.show();
   }
 }

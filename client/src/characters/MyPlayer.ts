@@ -98,7 +98,7 @@ export default class MyPlayer extends Player {
       playerSelector.setPosition(this.x, this.y);
       playerSelector.update(this, cursors);
       network.updatePlayer(this.x, this.y, this.anims.currentAnim.key);
-    }
+    };
 
     const item = playerSelector.selectedItem
 

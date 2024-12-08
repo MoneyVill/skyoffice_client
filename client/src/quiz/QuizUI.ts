@@ -56,7 +56,7 @@ export default class QuizUI {
 
       .quiz-options-text {
         font-size: 24px;
-        font-family: Arial, sans-serif;s
+        font-family: Arial, sans-serif;
         color: #575757;
       }
 
@@ -85,6 +85,7 @@ export default class QuizUI {
         padding: 20px 40px;
         border-radius: 50%;
         text-align: center;
+        color: #575757;
       }
 
       .quiz-correct-overlay {

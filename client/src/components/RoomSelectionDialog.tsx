@@ -76,7 +76,7 @@ export default function RoomSelectionDialog() {
     <Backdrop>
       <Wrapper>
         <Content>
-          <Title>Connecting to Jungle MoneyVille...</Title>
+          <Title>Connecting to Jungle MoneyVill...</Title>
           <img src={logo} alt="logo" />
         </Content>
       </Wrapper>

@@ -156,7 +156,7 @@ export default function LoginDialog() {
   // const roomDescription = useAppSelector((state) => state.room.roomDescription)
 
   const roomJoined = true // Set to true for default joining capability
-  const roomName = 'Jungle MoneyVille' // Set a default room name
+  const roomName = 'Jungle MoneyVill' // Set a default room name
   const roomDescription = 'MoneyVille에 오신걸 환영합니다' // Set a default room description
 
   const game = phaserGame.scene.keys.game as Game
